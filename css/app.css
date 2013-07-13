@@ -1,0 +1,17 @@
+﻿body {
+}
+
+section {
+    display: none;
+}
+    section.visible {
+        display: block;
+    }
+
+#login label,
+#login input {
+    float: left;
+}
+#login label {
+    clear: both;
+}
