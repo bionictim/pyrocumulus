@@ -5,6 +5,10 @@
     var _ = underscore;
     var Pogoplug = pogoplug;
 
+    var Consts = {
+        version: "1"
+    };
+
     var Section = {
         login: "login",
         services: "services",
@@ -28,6 +32,13 @@
                 section = Section.services;
             else {
                 section = Section.files;
+
+                App.Repository.getFiles().then(function (data, status) {
+                    App.FileList.render({
+                        parentid: "",
+                        files: data
+                    });
+                });
             }
         }
 
@@ -40,24 +51,18 @@
 
     var render = function () {
         if (Pogoplug.isLoggedIn()) {
-            var servicesModel = App.LocalStorage.get(App.LocalStorage.Keys.services);
-
-            if (!servicesModel) {
-                var request = Pogoplug.makeRequest("listServices");
-                request.then(function (data, status) {
-                    App.ServiceList.render(data);
-                    showSection();
-                });
-            } else {
-                App.ServiceList.render(servicesModel);
+            App.Repository.getServices().then(function (data, status) {
+                App.ServiceList.render(data);
                 showSection();
-            }
+            });
         } else {
             showSection();
         }
-    }
+    };
 
     var init = function () {
+        App.Controller.init(Consts.version);
+
         _m.$allSections = $("section");
         _.each(Section, function (section) {
             _m.$sections[section] = $("#" + section);
@@ -88,6 +93,9 @@
             App.LocalStorage.set(App.LocalStorage.Keys.selectedService, service);
             render();
         });
+
+        App.FileList.init(Section.files);
+        // TODO: callback?
 
         render();
     };

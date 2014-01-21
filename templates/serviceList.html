@@ -1,5 +1,5 @@
 ﻿<ul>
   <% for (var i = 0, len = services.length; i < len; i++) { %>
-    <%= new EJS({url: "/templates/service.html?__v=1"}).render(services[i]) %>
+    <%= App.Controller.render("service", services[i]) %>
   <% } %>
 </ul>

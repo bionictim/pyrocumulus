@@ -33,6 +33,13 @@ Pogoplug = (function (jquery, underscore) {
         ]
     };
 
+    var Enums = {
+        FileType: {
+            file: 0,
+            directory: 1
+        }
+    };
+
     var _m = {
         options: {
             baseUrl: null,
@@ -183,22 +190,27 @@ Pogoplug = (function (jquery, underscore) {
         return result;
     };
 
+    var getRequestParams = function (endpointOrKey, params) {
+        params = params || cloneParams(endpointOrKey).required;
+        applyStoredParams(endpointOrKey, params);
+        cleanupParams(params);
+
+        return params;
+    };
+
     var cloneParams = function (endpointOrKey, asOneList) {
         var endpoint = getEndpoint(endpointOrKey);
         var result = null;
 
         if (!!endpoint) {
-            result = {};
-            var params = _.clone(endpoint.params);
-
             if (asOneList)
-                _.extend(result, params.required, params.optional);
+                result = $.extend(true, {}, endpoint.params.required, endpoint.params.optional);
             else
-                _.extend(result, params);
+                result = $.extend(true, {}, endpoint.params);
         }
 
         return result;
-    }
+    };
 
     var login = function (email, password) {
         var endpoint = endpoints.loginUser;
@@ -258,20 +270,25 @@ Pogoplug = (function (jquery, underscore) {
     };
 
     var getCacheKey = function (method, params, noCache) {
-        var cacheKey;
+        var result;
+        params = params || {};
 
         if (!!noCache)
-            cacheKey = "";
+            result = "";
         else {
-            var cacheParams = _.clone(params);
-            _.each(Consts.paramsToOmitFromCacheKey, function (param) {
-                delete cacheParams[param];
-            });
+            result = method;
 
-            cacheKey = method + JSON.stringify(cacheParams);
+            if (!!params) {
+                var cacheParams = $.extend(true, {}, params);
+                _.each(Consts.paramsToOmitFromCacheKey, function (param) {
+                    delete cacheParams[param];
+                });
+
+                result += JSON.stringify(cacheParams);
+            }
         }
 
-        return cacheKey;
+        return result;
     };
 
     var makeRequest = function (endpointOrKey, params, httpMethod, format, options) {
@@ -282,16 +299,12 @@ Pogoplug = (function (jquery, underscore) {
             noCache: false, // true to prevent caching
             forceRefresh: false // true to repopulate the cache
         };
+        params = getRequestParams(endpointOrKey, params);
 
         // Get endpoint.
         var endpoint = getEndpoint(endpointOrKey);
-
-        params = params || cloneParams(endpointOrKey).required;
-        applyStoredParams(endpointOrKey, params);
-        cleanupParams(params);
-
         var deferred = $.Deferred();
-        var cacheKey = getCacheKey(endpoint.method, params, options.noCache);        
+        var cacheKey = getCacheKey(endpoint.method, params, options.noCache);
 
         var cachedData = (!!options.noCache || !!options.forceRefresh) ?
             null :
@@ -368,13 +381,17 @@ Pogoplug = (function (jquery, underscore) {
     init();
 
     return {
+        Enums: Enums,
         setOptions: setOptions,
         getInterface: function () { return _.clone(endpoints); },
         cloneParams: cloneParams,
         cacheParams: cacheParams,
         login: login,
         isLoggedIn: isLoggedIn,
+        getRequestParams: getRequestParams,
         makeRequest: makeRequest,
+        getEndpoint: getEndpoint,
+        getCacheKey: getCacheKey,
         deepPick: deepPick // Maybe a util
     };
 

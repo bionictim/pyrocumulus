@@ -5,6 +5,10 @@
     var _ = underscore;
     var EJS = ejs;
 
+    var Consts = {
+        viewName: "serviceList"
+    };
+
     var _m = {
         model: null,
         containerSelector: "",
@@ -22,17 +26,15 @@
     var render = function (model) {
         if (model) {
             _m.model = model;
-            var html = new EJS({ url: "/templates/serviceList.html?__v=1" }).render(model);
+            var html = App.Controller.render(Consts.viewName, model);
             _m.$container.html(html);
         }
-
-        bindEvents();
     };
 
-    var bindEvents = function () {
-        $("li a", _m.containerSelector).click(function (e) {
+    var bindEventsOnce = function () {
+        _m.$container.on("click", "li a", function (e) {
             e.preventDefault();
-            var $item = $(this).parent();
+            var $item = $(e.currentTarget).parent();
             var deviceid = $item.data("deviceid");
             var serviceid = $item.data("serviceid");
             var name = $item.data("name");
@@ -48,6 +50,7 @@
     var init = function (containerId) {
         _m.containerSelector = "#" + containerId;
         _m.$container = $(_m.containerSelector);
+        bindEventsOnce();
     };
 
     return {
