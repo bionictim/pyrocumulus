@@ -26,7 +26,7 @@
     var render = function (model) {
         if (model) {
             _m.model = model;
-            var html = App.Controller.render(Consts.viewName, model);
+            var html = App.View.render(Consts.viewName, model);
             _m.$container.html(html);
         }
     };

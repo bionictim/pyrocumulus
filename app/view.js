@@ -1,4 +1,4 @@
-﻿App.Controller = (function (jquery, underscore) {
+﻿App.View = (function (jquery, underscore) {
     "use strict";
 
     var $ = jquery;

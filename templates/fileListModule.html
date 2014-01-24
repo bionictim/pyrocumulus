@@ -1,0 +1,27 @@
+﻿<!-- NOTE: The parentid is one level too low. We need its parent. -->
+<a href="" class="navigate up" 
+  data-fileid="<%= parentDirectory.parentid %>"
+  data-type="<%= Pogoplug.Enums.FileType.directory %>">
+  UP
+</a>
+<%
+  var dirLists = ["genreDirectories", "albumDirectories"];
+%>
+<% for (var i = 0, len = dirLists.length; i < len; i++) { %>
+  <ul class="directory list <%= dirLists[i] %>">
+    <% for (var j = 0, fileCount = this[dirLists[i]].length; j < fileCount; j++) { %>
+      <%= App.View.render("file", this[dirLists[i]][j]) %>
+    <% } %>
+  </ul>
+<% } %>
+
+<%
+  var fileLists = ["songs", "images", "otherFiles"];
+%>
+<% for (var i = 0, len = fileLists.length; i < len; i++) { %>
+  <ul class="file list <%= fileLists[i] %>">
+    <% for (var j = 0, fileCount = this[fileLists[i]].length; j < fileCount; j++) { %>
+      <%= App.View.render("file", this[fileLists[i]][j]) %>
+    <% } %>
+  </ul>
+<% } %>

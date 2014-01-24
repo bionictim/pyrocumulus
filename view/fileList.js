@@ -6,11 +6,11 @@
     var EJS = ejs;
 
     var Consts = {
-        viewName: "fileList"
+        viewName: "fileListModule"
     };
 
     var _m = {
-        model: null,
+        model: null, // App.ViewModel.FileListViewModel
         containerSelector: "",
         $container: null
     };
@@ -26,8 +26,24 @@
     var render = function (model) {
         if (model) {
             _m.model = model;
-            var html = App.Controller.render(Consts.viewName, model);
+            var html = App.View.render(Consts.viewName, model);
             _m.$container.html(html);
+
+            model.albumDirectories.forEach(function (file) {
+                App.ViewModel.FileListViewModel.load(file.fileid).then(function (viewModel) {
+                    var thumbnailFile = viewModel.getThumbnail();
+                    if (!!thumbnailFile) {
+                        var thumbId = !!thumbnailFile ? thumbnailFile.thumbnail || thumbnailFile.fileid : "";
+                        var url = Pogoplug.getFileStreamUrl(thumbId);
+
+                        if (!!url) {
+                            var $item = _m.$container
+                                .find(".item[data-fileid='" + file.fileid + "'] .image-container")
+                                .css("background-image", App.Utils.formatBackgroundImageCss(url));
+                        }
+                    }
+                });
+            });
         }
     };
 
@@ -43,11 +59,8 @@
             });
 
             if (itemData.type == Pogoplug.Enums.FileType.directory) {
-                App.Repository.getFiles(itemData.fileid).then(function (data, status) {
-                    render({
-                        parentid: itemData.fileid,
-                        files: data
-                    });
+                App.ViewModel.FileListViewModel.load(itemData.fileid).then(function (viewModel) {
+                    render(viewModel);
                 });
             }
         });

@@ -28,15 +28,18 @@ Pogoplug = (function (jquery, underscore) {
     };
 
     var Consts = {
+        fileStreamEndpoint: "http://service.pogoplug.com/svc/files/{valtoken}/{deviceid}/{serviceid}/{fileid}/stream",
         paramsToOmitFromCacheKey: [
-            "valtoken"
+            "valtoken",
+            "deviceid",
+            "serviceid"
         ]
     };
 
     var Enums = {
         FileType: {
-            file: 0,
-            directory: 1
+            file: "0",
+            directory: "1"
         }
     };
 
@@ -49,7 +52,8 @@ Pogoplug = (function (jquery, underscore) {
             valtoken: null,
             deviceid: null,
             serviceid: null
-        }
+        },
+        fileStreamEndpointHydrated: null
     };
 
     var defaults = {
@@ -140,6 +144,23 @@ Pogoplug = (function (jquery, underscore) {
                     searchcrit: "", // false,
                     sortcrit: Sort.nameAsc
                 }
+            },
+            retVal: {
+                count: "",
+                pageoffset: "",
+                totalcount: "",
+                files: [{
+                    fileid: "",
+                    type: ""
+                }]
+            },
+            listOf: {
+                endpoint: "getFile",
+                resultListProperty: "files",
+                paramMap: [{
+                    itemRequestParam: "fileid",
+                    listResultValue: "fileid"
+                }]
             }
         },
         searchFiles: {
@@ -168,7 +189,8 @@ Pogoplug = (function (jquery, underscore) {
                     fileid: "", // Exclusive to path parameter. Use only one.
                     path: "" // Exclusive to fileid parameter. Use only one.
                 }
-            }
+            },
+            promoteResultProperty: "file"
         },
         createFile: "createFile",
         removeFile: "removeFile",
@@ -180,6 +202,22 @@ Pogoplug = (function (jquery, underscore) {
         listSharedUsers: "listSharedUsers",
         addSharedUser: "addSharedUser",
         removeSharedUser: "removeSharedUser"
+    };
+
+    var getFileStreamUrl = function (fileid) {
+        if (!_m.cachedParams.valtoken) throw "Missing valtoken.";
+        if (!_m.cachedParams.deviceid) throw "Missing deviceid.";
+        if (!_m.cachedParams.serviceid) throw "Missing serviceid.";
+
+        if (!_m.fileStreamEndpointHydrated)
+            _m.fileStreamEndpointHydrated = Consts.fileStreamEndpoint
+                .replace("{valtoken}", _m.cachedParams.valtoken)
+                .replace("{serviceid}", _m.cachedParams.serviceid)
+                .replace("{deviceid}", _m.cachedParams.deviceid);
+
+        var result = _m.fileStreamEndpointHydrated.replace("{fileid}", fileid);
+
+        return result;
     };
 
     var getEndpoint = function (endpointOrKey) {
@@ -244,6 +282,9 @@ Pogoplug = (function (jquery, underscore) {
         } else {
             result = rawResult;
         }
+
+        if (endpoint.promoteResultProperty)
+            result = result[endpoint.promoteResultProperty];
 
         return result;
     };
@@ -318,16 +359,16 @@ Pogoplug = (function (jquery, underscore) {
                 url: url,
                 dataType: format,
                 data: params
-            }).success(function (data, status) {
+            }).success(function (rawData, status) {
                 if (status === "success") {
-                    console.log("Raw: ", data);
+                    //console.log("Raw: ", data);
 
-                    data = getResult(endpointOrKey, data);
+                    var data = getResult(endpointOrKey, rawData);
 
-                    console.log("Reduced: ", data);
+                    //console.log("Reduced: ", data);
 
                     if (!options.noCache)
-                        App.LocalStorage.set(cacheKey, data);
+                        cacheResult(endpoint, cacheKey, data, rawData);
 
                     deferred.resolve(data, status);
                 }
@@ -338,6 +379,33 @@ Pogoplug = (function (jquery, underscore) {
         }
 
         return deferred.promise();
+    };
+
+    var cacheResult = function (endpoint, cacheKey, data, rawData) {
+        App.LocalStorage.set(cacheKey, data);
+
+        if (!!endpoint.listOf) {
+            var list = rawData[endpoint.listOf.resultListProperty];
+
+            if (!!list && list.length) {
+                var params = null;
+                var itemEndpoint = getEndpoint(endpoint.listOf.endpoint);
+
+                list.forEach(function (item) {
+                    if (!!endpoint.listOf.paramMap) {
+                        params = {};
+                        endpoint.listOf.paramMap.forEach(function (p) {
+                            params[p.itemRequestParam] = item[p.listResultValue];
+                        });
+                    }
+
+                    params = getRequestParams(endpoint, params);
+                    var itemKey = getCacheKey(itemEndpoint.method, params);
+                    var itemResult = getResult(itemEndpoint, item);
+                    App.LocalStorage.set(itemKey, item);
+                });
+            }
+        }
     };
 
     var applyStoredParams = function (endpointOrKey, params) {
@@ -389,6 +457,7 @@ Pogoplug = (function (jquery, underscore) {
         login: login,
         isLoggedIn: isLoggedIn,
         getRequestParams: getRequestParams,
+        getFileStreamUrl: getFileStreamUrl,
         makeRequest: makeRequest,
         getEndpoint: getEndpoint,
         getCacheKey: getCacheKey,

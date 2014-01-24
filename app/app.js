@@ -33,11 +33,8 @@
             else {
                 section = Section.files;
 
-                App.Repository.getFiles().then(function (data, status) {
-                    App.FileList.render({
-                        parentid: "",
-                        files: data
-                    });
+                App.ViewModel.FileListViewModel.load().then(function (viewModel) {
+                    App.FileList.render(viewModel);
                 });
             }
         }
@@ -61,7 +58,7 @@
     };
 
     var init = function () {
-        App.Controller.init(Consts.version);
+        App.View.init(Consts.version);
 
         _m.$allSections = $("section");
         _.each(Section, function (section) {
