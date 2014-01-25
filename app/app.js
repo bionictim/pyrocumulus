@@ -65,6 +65,8 @@
             _m.$sections[section] = $("#" + section);
         });
 
+        App.Player.init("playerContainer");
+
         App.Login.init(Section.login);
         App.Login.setCallback("loggedIn", function (user) {
             console.log("Welcome, " + user.screenname + ".");

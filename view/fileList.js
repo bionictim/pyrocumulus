@@ -16,7 +16,7 @@
     };
 
     var callbacks = {
-        itemSelected: function (fileid) { }
+        itemSelected: function (fileid) { } // Probably not used.
     };
 
     var setCallback = function (name, callback) {
@@ -29,16 +29,16 @@
             var html = App.View.render(Consts.viewName, model);
             _m.$container.html(html);
 
-            model.albumDirectories.forEach(function (file) {
-                App.ViewModel.FileListViewModel.load(file.fileid).then(function (viewModel) {
+            model.albumDirectories.forEach(function (dir) {
+                App.ViewModel.FileListViewModel.load(dir.file.fileid).then(function (viewModel) {
                     var thumbnailFile = viewModel.getThumbnail();
                     if (!!thumbnailFile) {
-                        var thumbId = !!thumbnailFile ? thumbnailFile.thumbnail || thumbnailFile.fileid : "";
+                        var thumbId = !!thumbnailFile ? thumbnailFile.file.thumbnail || thumbnailFile.file.fileid : "";
                         var url = Pogoplug.getFileStreamUrl(thumbId);
 
                         if (!!url) {
                             var $item = _m.$container
-                                .find(".item[data-fileid='" + file.fileid + "'] .image-container")
+                                .find(".item[data-fileid='" + dir.file.fileid + "'] .image-container")
                                 .css("background-image", App.Utils.formatBackgroundImageCss(url));
                         }
                     }
@@ -48,12 +48,20 @@
     };
 
     var bindEventsOnce = function () {
-        _m.$container.on("click", "li a, a.navigate", function (e) {
+        _m.$container.on("click", "a[data-command]", function (e) {
             e.preventDefault();
             var $target = $(e.currentTarget);
-            var $item = $target.hasClass("navigate") ? $target : $target.parent();
+            var command = $target.data("command");
+            var $item = $target.closest(".file-info");
             var itemData = $item.data();
 
+            itemCommands[command](itemData);
+        });
+    };
+
+    var itemCommands = {
+        select: function (itemData) {
+            // Probably not used.
             callbacks.itemSelected({
                 fileid: itemData.fileid
             });
@@ -63,7 +71,14 @@
                     render(viewModel);
                 });
             }
-        });
+        },
+        play: function (itemData) {
+            App.Player.playSong(itemData.fileid);
+        },
+        playAll: function () {
+            var fileids = _.pluck(_m.model.files, "fileid");
+            App.Player.addAndPlayFirst(fileids);
+        }
     };
 
     var init = function (containerId) {

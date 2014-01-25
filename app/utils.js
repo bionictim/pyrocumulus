@@ -26,6 +26,32 @@
             });
 
             $img.attr("src", imageUrl);
+        },
+
+        Binding: {
+            process: function (element, data) {
+                //var $element = $(element);
+                //var 
+            }
         }
+    };
+
+    String.prototype.trim = function () {
+        return this.replace(/^\s+|\s+$/g, "");
+    };
+    String.prototype.ltrim = function () {
+        return this.replace(/^\s+/, "");
+    };
+    String.prototype.rtrim = function () {
+        return this.replace(/\s+$/, "");
+    };
+    String.prototype.isNumeric = function () {
+        return (this - 0) == this && this.length > 0;
+    };
+    String.prototype.startsWith = function (str) {
+        return (this.indexOf(str) === 0);
+    };
+    String.prototype.endsWith = function (suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
     };
 })();

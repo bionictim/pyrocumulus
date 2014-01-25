@@ -57,7 +57,7 @@ Pogoplug = (function (jquery, underscore) {
     };
 
     var defaults = {
-        baseUrl: "/api/",
+        baseUrl: "api/",
         format: Format.json
     };
 

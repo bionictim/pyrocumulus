@@ -13,7 +13,8 @@
             this.otherDirectories= [],
             this.songs=[],
             this.images= [],
-            this.otherFiles= []
+            this.otherFiles = []
+            this.parentDirectoryViewModel = App.ViewModel.FileViewModel.create(parentDirectory);
             this._loadLists();
         }, {
             _loadLists: function () {
@@ -28,8 +29,12 @@
 
                 var self = this;
                 this.files.forEach(function (file) {
-                    var fileType = App.ViewModel.FileViewModel.getFileType(file);
-                    self[listMap[fileType]].push(file);
+
+                    var fileViewModel = App.ViewModel.FileViewModel.create(file, self.parentDirectoryViewModel);
+                    self[listMap[fileViewModel.fileType]].push(fileViewModel);
+
+                    //var fileType = App.ViewModel.FileViewModel.getFileType(file);
+                    //self[listMap[fileType]].push(file);
                 });
             },
 

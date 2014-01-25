@@ -1,14 +1,28 @@
-﻿<li class="item"
-  data-fileid="<%= fileid %>"
-  data-type="<%= type %>"
-  data-filetype="<%= "TODO" %>"
-  data-json='<%= JSON.stringify(this) %>'>
-  <a href="" class="item-select">
+﻿<li class="item file-info"
+  data-fileid="<%= file.fileid %>"
+  data-type="<%= file.type %>"
+  data-filetype="<%= fileType %>"
+  data-json='<%= JSON.stringify(file) %>'>
+  <a href="" class="item-select" data-command="select">
     <div class="image-container"
       style="background-image: <%= App.Utils.formatBackgroundImageCss("") %>">
     </div>
     <div class="meta-info">
-      <span class="name"><%= filename %></span>
+      <% if (this instanceof App.ViewModel.AlbumDirectoryViewModel) { %>
+        <span class="artist"><%= artist %></span>
+        <span class="album"><%= album %></span>
+        <span class="meta"><%= meta %></span>
+      <% } else { %>
+        <% if (!!this["trackNumber"]) { %>
+          <span class="track-number"><%= trackNumber %></span>
+        <% } %>
+        <span class="name"><%= displayName %></span>
+      <% } %>
     </div>
   </a>
+  <% if (this instanceof App.ViewModel.SongViewModel) { %>
+    <div class="song-controls">
+      <a data-command="play" href="">Play</a>
+    </div>
+  <% } %>
 </li>

@@ -2,16 +2,25 @@
     var $ = jquery;
     var _ = underscore;
 
-    var inherit = (function () {
-        function F() { }
-        return function (child, parent) {
-            F.prototype = parent.prototype;
-            child.prototype = new F;
-            child.prototype.constructor = child;
-            child.superproto = parent.prototype;
-            return child;
-        };
-    })();
+    //var inherit = (function () {
+    //    function F() { }
+    //    return function (child, parent) {
+    //        F.prototype = parent.prototype;
+    //        child.prototype = new F;
+    //        child.prototype.constructor = child;
+    //        child.superproto = parent.prototype;
+    //        return child;
+    //    };
+    //})();
+
+    var inherit = function (subclass, superclass) {
+        function Dummy() { }
+        Dummy.prototype = superclass.prototype;
+        subclass.prototype = new Dummy();
+        subclass.prototype.constructor = subclass;
+        subclass.superclass = superclass;
+        subclass.superproto = superclass.prototype;
+    };
 
     var define = function (constructor, prototypeMembers, staticMembers) {
         if (!!prototypeMembers)

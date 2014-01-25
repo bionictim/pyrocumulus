@@ -5,7 +5,7 @@
     var _ = underscore;
 
     var Consts = {
-        templateBaseUri: "/templates/",
+        templateBaseUri: "templates/",
         version: "1"
     };
 
