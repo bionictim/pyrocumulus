@@ -33,6 +33,16 @@
                 //var $element = $(element);
                 //var 
             }
+        },
+
+        // TODO
+        Encryption: {
+            encrypt: function (val) {
+                return val;
+            },
+            decrypt: function (val) {
+                return val;
+            }
         }
     };
 

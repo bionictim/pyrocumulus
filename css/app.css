@@ -1,4 +1,8 @@
-﻿body, html {
+﻿html {
+    webkit-text-size-adjust: none;
+}
+
+body, html {
     width: 100%;
     height: 100%;
     padding: 0;
@@ -8,118 +12,291 @@
     color: #dedede;
 }
 
+a, a:visited {
+    text-decoration: none;
+    color: #fff;
+    font-size: 16px;
+}
+
 section {
     display: none;
+    min-height: 100vh;
 }
 
     section.visible {
         display: block;
     }
 
+.hidden {
+    display: none !important;
+}
+
 #login {
     text-align: center;
 }
-#login form {
-    width: 400px;
-    display: inline-block;
-    margin-top: 100px;
+
+    #login form {
+        width: 400px;
+        display: inline-block;
+        margin-top: 100px;
+    }
+
+    #login label,
+    #login input,
+    #login button {
+        float: left;
+    }
+
+    #login label {
+        clear: both;
+        width: 100px;
+    }
+
+    #login input {
+        width: 200px;
+        margin-bottom: 10px;
+    }
+
+    #login button[type='submit'] {
+        clear: both;
+        margin-left: 100px;
+        width: 204px;
+        background: #808080;
+        color: #fff;
+    }
+
+#app {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
 }
-#login label,
-#login input,
-#login button {
+
+#background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+}
+
+    #background .image-host {
+        position: absolute;
+        z-index: -100;
+        height: 100vh;
+        width: 100%;
+        background: #404142; /* Old browsers */
+        background: -moz-radial-gradient(right bottom, farthest-side, #404142 0%, #2c2d2d 42%, #000000 100%); /* FF3.6+ */
+        background: -webkit-gradient(radial, 100% 100%, 0px, 100% 100%, 100%, color-stop(0%,#404142), color-stop(42%,#2c2d2d), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+        background: -webkit-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%); /* Opera 12+ */
+        background: -ms-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%); /* IE10+ */
+        background: radial-gradient(farthest-side at right bottom, #404142 0%,#2c2d2d 42%,#000000 100%); /* W3C */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404142', endColorstr='#000000',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+    }
+
+/* Controls */
+audio {
+    margin: 15px 10px;
+    float: left;
+    margin-right: 10px;
+}
+
+.controls {
     float: left;
 }
 
-#login label {
-    clear: both;
-    width: 100px;
-}
+    .controls a {
+        display: inline-block;
+        margin: 10px 0 10px 10px;
+        border: 2px solid white;
+        border-radius: 20px;
+        padding: 8px 8px;
+    }
 
-#login input {
-    width: 200px;
-    margin-bottom: 10px;
-}
-
-#login button[type='submit'] {
-    clear: both;
-    margin-left: 100px;
-    width: 204px;
-    background: #808080;
-    color: #fff;
-}
-
-#app {
-    overflow-y: scroll;
-    height: 100%;
+.file-list-view .controls {
+    position: relative;
     width: 100%;
-    background: #404142; /* Old browsers */
-    background: -moz-radial-gradient(center, ellipse cover, #404142 0%, #2c2d2d 42%, #000000 100%); /* FF3.6+ */
-    background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#404142), color-stop(42%,#2c2d2d), color-stop(100%,#000000)); /* Chrome,Safari4+ */
-    background: -webkit-radial-gradient(center, ellipse cover, #404142 0%,#2c2d2d 42%,#000000 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-radial-gradient(center, ellipse cover, #404142 0%,#2c2d2d 42%,#000000 100%); /* Opera 12+ */
-    background: -ms-radial-gradient(center, ellipse cover, #404142 0%,#2c2d2d 42%,#000000 100%); /* IE10+ */
-    background: radial-gradient(ellipse at center, #404142 0%,#2c2d2d 42%,#000000 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404142', endColorstr='#000000',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+    border-bottom: 1px solid grey;
+    background: black;
 }
 
-
-/* Controls */
-.file-list .controls {
-    width: 100%;
-    border-bottom:;
+.file-list-view .directory-info {
+    text-transform: capitalize;
+    font-size: 18px;
+    margin-right: 15px;
+    position: absolute;
+    top: 19px;
+    right: 5vw;
 }
+
+.file-list-view .list-section {
+    text-align: center;
+    clear: both;
+    position: relative;
+    min-height: 90vh;
+}
+
+    .file-list-view .list-section .mask {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+    }
 
 
 /* Tiles */
+/* -- responsive sizes -- */
+
+ul.list {
+    width: 93vw;
+}
+
+.list .item {
+    margin: 1vw;
+}
+
+    .list .item .image-container {
+        height: 16vw;
+    }
+
+.list.directory .item,
+.list.file .item,
+.song-queue .list.file.song .item,
+.song-queue .list.file.song .item .item-select {
+    width: 16vw;
+}
+
+.list.directory .item,
+.song-queue .list.file.song .item {
+    height: 20vw;
+}
+
+.list.file .item {
+    height: 4vw;
+}
+
+.list .item .meta-info {
+    min-height: 4vw;
+}
+
+.list.song .item .item-select {
+    width: 28vw;
+}
+
+.list.file.song .item {
+    width: 36vw;
+    background: black;
+}
+
+.list.song .item .song-controls {
+    width: 8vw;
+}
+
+    .list.song .item .song-controls a {
+        width: 4vw;
+    }
+
+
+
+@media screen and (max-width: 480px) {
+
+    ul.list {
+        width: 84vw;
+    }
+
+    .list .item {
+        margin: 2vw;
+    }
+
+        .list .item .image-container {
+            height: 37vw;
+        }
+
+    .list.directory .item,
+    .list.file .item,
+    .song-queue .list.file.song .item,
+    .song-queue .list.file.song .item .item-select {
+        width: 37vw;
+    }
+
+    .list.directory .item,
+    .song-queue .list.file.song .item {
+        height: 45vw;
+    }
+
+    .list.file .item {
+        height: 8vw;
+    }
+
+    .list .item .meta-info {
+        min-height: 8vw;
+    }
+
+    .list.song .item .item-select {
+        width: 66vw;
+    }
+
+    .list.file.song .item {
+        width: 82vw;
+    }
+
+    .list.song .item .song-controls {
+        width: 16vw;
+    }
+
+
+        .list.song .item .song-controls a {
+            width: 8vw;
+        }
+}
+
+/* ==== */
+
+.file-list-view {
+    min-height: 100vh;
+}
+
 ul.list {
     padding: 0;
     list-style-type: none;
-    float: left;
+    display: inline-block;
     clear: both;
+}
+
+.file-list-view .list:last-child {
+    margin-bottom: 200px;
 }
 
 .list .item {
     position: relative;
     display: block;
     float: left;
-    margin: 20px;
     border: 1px solid grey;
     background: black;
 }
 
-.list.directory .item {
-    width: 160px;
-    height: 200px;
-}
+    .list .item > * {
+        position: relative;
+    }
 
-.list.file .item {
-    width: 160px;
-    height: 40px;
-}
+    .list .item .item-select {
+        display: block;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+    }
 
-.list .item > * {
-    position: relative;
-}
-
-.list .item .item-select {
-    display: block;
-    height: 100%;
-    width: 100%;
-    text-align: center;
-}
-
-.list .item .image-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 160px;
-    background-size: cover;
-    /*opacity: 0;
+    .list .item .image-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-size: cover;
+        /*opacity: 0;
     transition: opacity 300ms linear;
     -webkit-transition: opacity 300ms linear;
     -moz-transition: opacity 300ms linear;*/
-}
+    }
 
 /*.list .item .image-container.loaded {
         opacity: 1;
@@ -130,9 +307,12 @@ ul.list {
     display: none;
 }
 
+.song-queue .list.file.song .item .image-container {
+    display: block;
+}
+
 .list .item .meta-info {
     width: 100%;
-    min-height: 40px;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -160,52 +340,104 @@ ul.list {
         display: none;
     }
 
-.list.file.songs .item {
-    width: 362px;
+.list.file.song .item {
     clear: both;
     margin-bottom: 0;
 }
 
-    .list.file.songs .item > * {
+    .list.file.song .item > * {
         display: block;
         float: left;
     }
 
-.list.songs .item .item-select {
-    width: 320px;
-}
-
-.list.songs .item .meta-info {
+.list.song .item .meta-info {
     text-align: left;
     width: 100%;
 }
 
-    .list.songs .item .meta-info > * {
+    .list.song .item .meta-info > * {
         display: inline-block;
         margin-right: 4px;
     }
 
-.list.songs .item .song-controls {
+.list.song .item .song-controls {
     height: 100%;
-    width: 40px;
     background: #ccc;
     float: right;
 }
 
-    .list.songs .item .song-controls .play {
+    .list.song .item .song-controls a {
         float: right;
+        display: block;
         height: 100%;
-        width: 40px;
-        border-left: grey;
+        border: 1px solid black;
+        box-sizing: border-box;
+        color: black;
     }
-
-        .list.songs .item .song-controls .play a {
-            text-align: center;
-            vertical-align: middle;
-        }
 
 
 /* PLAYER */
-.player .controls {
-
+.player-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
 }
+
+    .player-view .positioner {
+        height: 100%;
+        width: 0;
+        position: relative;
+    }
+
+        .player-view .positioner .drawer {
+            position: absolute;
+            bottom: 0;
+            width: 100vw;
+            transition: bottom 250ms ease-out;
+            background: #808080;
+        }
+
+    .player-view .drawer .toggle {
+        position: absolute;
+        top: -20px;
+        right: 20px;
+        border: 2px solid grey;
+        border-bottom: none;
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        background: grey;
+    }
+
+.player .controls {
+}
+
+#nowPlaying {
+    clear: both;
+    float: left;
+    width: 100%;
+    text-transform: capitalize;
+}
+
+#nowPlaying > span {
+    margin: 0 11px;
+}
+
+.song-queue {
+    width: 100%;
+    float: left;
+    clear: both;
+    overflow-x: scroll;
+}
+
+    .song-queue .list.file.song {
+        width: 100%; /* Dynamically altered when items are added. */
+    }
+
+        .song-queue .list.file.song .item {
+            clear: none;
+        }
+
+            .song-queue .list.file.song .item .song-controls {
+                display: none;
+            }

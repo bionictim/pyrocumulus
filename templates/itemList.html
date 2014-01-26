@@ -1,0 +1,8 @@
+﻿<% if (list.length > 0) { %>
+  <% var className = (list[0] instanceof App.ViewModel.DirectoryViewModel) ? "directory" : "file"; %>
+  <ul class="<%= className %> list <%= list[0].fileType %>">
+    <% for (var j = 0, fileCount = list.length; j < fileCount; j++) { %>
+      <%= App.View.render("file", list[j]) %>
+    <% } %>
+  </ul>
+<% } %>

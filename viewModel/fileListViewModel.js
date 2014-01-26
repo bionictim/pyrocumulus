@@ -8,11 +8,11 @@
         function (parentDirectory, files) {
             this.parentDirectory = parentDirectory || null;
             this.files = files || [];
-            this.genreDirectories=[]
-            this.albumDirectories= [],
-            this.otherDirectories= [],
-            this.songs=[],
-            this.images= [],
+            this.genreDirectories = []
+            this.albumDirectories = [],
+            this.otherDirectories = [],
+            this.songs = [],
+            this.images = [],
             this.otherFiles = []
             this.parentDirectoryViewModel = App.ViewModel.FileViewModel.create(parentDirectory);
             this._loadLists();
@@ -29,25 +29,39 @@
 
                 var self = this;
                 this.files.forEach(function (file) {
-
                     var fileViewModel = App.ViewModel.FileViewModel.create(file, self.parentDirectoryViewModel);
                     self[listMap[fileViewModel.fileType]].push(fileViewModel);
-
-                    //var fileType = App.ViewModel.FileViewModel.getFileType(file);
-                    //self[listMap[fileType]].push(file);
                 });
             },
 
-            getThumbnail: function () {
+            getThumbnail: function (size) {
+                size = size || "small";
                 var result = null;
+                var candidates = [];
+                var bestCandidates = [];
 
-                if (!!this.images) {
+                if (!!this.images && this.images.length > 0) {
                     for (var i = 0, len = this.images.length; i < len; i++) {
                         // TODO: Get the right image.
                         // TODO: optimize, repository?
-                        result = this.images[i];
-                        break;
+                        if (size === "small") {
+                            result = this.images[i];
+                            break;
+                        } else {
+                            var filename = this.images[i].file.filename.toLowerCase();
+                            if (size === "large") {
+                                if (filename.substr("small") < 0 && filename.substr("back") < 0) {
+                                    if (filename.substr("cover") >= 0)
+                                        bestCandidates.push(this.images[i]);
+                                    else
+                                        candidates.push(this.images[i]);
+                                }
+                            }
+                        }
                     }
+
+                    if (!result)
+                        result = this.images[0];
                 }
 
                 return result;

@@ -1,8 +1,7 @@
 ﻿<li class="item file-info"
   data-fileid="<%= file.fileid %>"
   data-type="<%= file.type %>"
-  data-filetype="<%= fileType %>"
-  data-json='<%= JSON.stringify(file) %>'>
+  data-filetype="<%= fileType %>">
   <a href="" class="item-select" data-command="select">
     <div class="image-container"
       style="background-image: <%= App.Utils.formatBackgroundImageCss("") %>">
@@ -22,7 +21,8 @@
   </a>
   <% if (this instanceof App.ViewModel.SongViewModel) { %>
     <div class="song-controls">
-      <a data-command="play" href="">Play</a>
+      <a data-command="play" href="">&#9658;</a>
+      <a data-command="addSong" href="">+</a>
     </div>
   <% } %>
 </li>

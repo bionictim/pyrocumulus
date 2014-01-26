@@ -9,7 +9,7 @@
         valtoken: "valtoken",
         //services: "services",
         selectedService: "selectedService",
-        //directory: "directory",
+        currentDirectory: "currentDirectory",
         //playlist: "playlist",
         playlist: "playlist_{name}",
         thumbnail: "thumbnail_{parentid}"

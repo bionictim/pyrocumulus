@@ -1,14 +1,23 @@
-﻿<div class="player">
-  <audio controls="controls"></audio>
-  <div class="controls">
-    <a data-command="previous" href="">Prev</a>
-    <a data-command="play" href="">Play</a>
-    <a data-command="pause" href="">Pause</a>
-    <a data-command="next" href="">Next</a>
+﻿<div class="player-view">
+  <div class="positioner">
+    <div class="drawer">
+      <a data-command="toggleVisibility" class="toggle" href="">&nbsp;&nbsp;^&nbsp;&nbsp;</a>
+      <div class="player">
+        <audio controls="controls"></audio>
+        <div class="controls">
+          <a data-command="previous" href="">Prev</a>
+          <a data-command="next" href="">Next</a>
+          <a data-command="play" href="" class="hidden">Play</a>
+          <a data-command="stop" href="">Stop</a>
+          <a data-command="clearQueue" href="">Clear</a>
+        </div>
+      </div>
+      <div id="nowPlaying">
+        <span data-bind="artist"></span> |
+        <span data-bind="displayName"></span> |
+        <span data-bind="album"></span>
+        <div class="song-queue"></div>
+      </div>
+    </div>
   </div>
-</div>
-<div id="nowPlaying">
-  <span data-bind="displayName"></span>
-  <span data-bind="artist"></span>
-  <span data-bind="album"></span>
 </div>

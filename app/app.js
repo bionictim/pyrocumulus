@@ -6,7 +6,7 @@
     var Pogoplug = pogoplug;
 
     var Consts = {
-        version: "1"
+        version: "1.000027"
     };
 
     var Section = {
@@ -20,45 +20,12 @@
         $sections: {}
     };
 
-    var sectionSelector = function (section) {
-        return "#" + section;
-    };
-
-    var showSection = function (section) {
-        if (!section) {
-            if (!Pogoplug.isLoggedIn())
-                section = Section.login;
-            else if (!Pogoplug.cacheParams().deviceid)
-                section = Section.services;
-            else {
-                section = Section.files;
-
-                App.ViewModel.FileListViewModel.load().then(function (viewModel) {
-                    App.FileList.render(viewModel);
-                });
-            }
-        }
-
-        _m.$allSections.removeClass("visible");
-        _m.$sections[section].addClass("visible");
-    };
-
-    var bindEvents = function () {
-    };
-
-    var render = function () {
-        if (Pogoplug.isLoggedIn()) {
-            App.Repository.getServices().then(function (data, status) {
-                App.ServiceList.render(data);
-                showSection();
-            });
-        } else {
-            showSection();
-        }
-    };
-
     var init = function () {
+        // TODO: Refactor most of this to a "main" view, but this part stays in "app".
         App.View.init(Consts.version);
+
+        // TODO: "main" view stuffs after refactoring to a view.
+        bindEventsOneTime();
 
         _m.$allSections = $("section");
         _.each(Section, function (section) {
@@ -96,7 +63,72 @@
         App.FileList.init(Section.files);
         // TODO: callback?
 
+        (function () {
+            function disableselect(e) {
+                return false
+            }
+            function reEnable() {
+                return true
+            }
+            document.onselectstart = new Function("return false")
+            if (window.sidebar) {
+                document.onmousedown = disableselect
+                document.onclick = reEnable
+            }
+
+            $("body").on("dragstart", function (e) {
+                return false;
+            }).on("drop", function (e) {
+                return false;
+            });
+        })();
+
         render();
+    };
+
+    var sectionSelector = function (section) {
+        return "#" + section;
+    };
+
+    var showSection = function (section) {
+        if (!section) {
+            if (!Pogoplug.isLoggedIn())
+                section = Section.login;
+            else if (!Pogoplug.cacheParams().deviceid)
+                section = Section.services;
+            else {
+                section = Section.files;
+
+                var currentDirectory = App.LocalStorage.get(App.LocalStorage.Keys.currentDirectory);
+                var currentDirectoryId = !!currentDirectory ? currentDirectory.fileid : null;
+
+                App.ViewModel.FileListViewModel.load(currentDirectoryId).then(function (viewModel) {
+                    App.FileList.render(viewModel);
+                });
+            }
+        }
+
+        _m.$allSections.removeClass("visible");
+        _m.$sections[section].addClass("visible");
+    };
+
+    var bindEventsOneTime = function () {
+        $(window).on("resize", handleResize);
+    };
+
+    var handleResize = function (e) {
+        App.Player.handleResize();
+    };
+
+    var render = function () {
+        if (Pogoplug.isLoggedIn()) {
+            App.Repository.getServices().then(function (data, status) {
+                App.ServiceList.render(data);
+                showSection();
+            });
+        } else {
+            showSection();
+        }
     };
 
     return {

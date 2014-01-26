@@ -6,7 +6,7 @@
     var EJS = ejs;
 
     var Consts = {
-        viewName: "fileListModule"
+        viewName: "fileList"
     };
 
     var _m = {
@@ -29,6 +29,8 @@
             var html = App.View.render(Consts.viewName, model);
             _m.$container.html(html);
 
+            window.scrollTo(0);
+
             model.albumDirectories.forEach(function (dir) {
                 App.ViewModel.FileListViewModel.load(dir.file.fileid).then(function (viewModel) {
                     var thumbnailFile = viewModel.getThumbnail();
@@ -44,6 +46,27 @@
                     }
                 });
             });
+
+            if (model.parentDirectoryViewModel instanceof App.ViewModel.AlbumDirectoryViewModel) {
+                var thumbnailFile = model.getThumbnail("large");
+                if (!!thumbnailFile) {
+                    var thumbId = !!thumbnailFile ? thumbnailFile.file.fileid : "";
+                    var url = Pogoplug.getFileStreamUrl(thumbId);
+
+                    if (!!url) {
+                        _m.$container.find(".list-section").css({
+                            background: App.Utils.formatBackgroundImageCss(url),
+                            "background-size": "cover",
+                            "background-repeat": "no-repeat",
+                            "background-position": "center top"
+                        });
+                    }
+
+                    _m.$container.find(".mask").show();
+                }
+            } else {
+                _m.$container.find(".mask").hide();
+            }
         }
     };
 
@@ -55,11 +78,11 @@
             var $item = $target.closest(".file-info");
             var itemData = $item.data();
 
-            itemCommands[command](itemData);
+            commands[command](itemData);
         });
     };
 
-    var itemCommands = {
+    var commands = {
         select: function (itemData) {
             // Probably not used.
             callbacks.itemSelected({
@@ -69,15 +92,23 @@
             if (itemData.type == Pogoplug.Enums.FileType.directory) {
                 App.ViewModel.FileListViewModel.load(itemData.fileid).then(function (viewModel) {
                     render(viewModel);
+                    App.LocalStorage.set(App.LocalStorage.Keys.currentDirectory, { fileid: itemData.fileid });
                 });
             }
         },
         play: function (itemData) {
             App.Player.playSong(itemData.fileid);
         },
+        addSong: function (itemData) {
+            App.Player.addSong(itemData.fileid);
+        },
         playAll: function () {
             var fileids = _.pluck(_m.model.files, "fileid");
-            App.Player.addAndPlayFirst(fileids);
+            App.Player.addAllAndPlayFirst(fileids);
+        },
+        addAll: function () {
+            var fileids = _.pluck(_m.model.files, "fileid");
+            App.Player.addAll(fileids);
         }
     };
 
