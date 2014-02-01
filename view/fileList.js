@@ -23,6 +23,12 @@
         callbacks[name] = callback;
     };
 
+    var init = function (containerId) {
+        _m.containerSelector = "#" + containerId;
+        _m.$container = $(_m.containerSelector);
+        bindEventsOnce();
+    };
+
     var render = function (model) {
         if (model) {
             _m.model = model;
@@ -103,19 +109,42 @@
             App.Player.addSong(itemData.fileid);
         },
         playAll: function () {
-            var fileids = _.pluck(_m.model.files, "fileid");
-            App.Player.addAllAndPlayFirst(fileids);
+            getAllSongs().then(function (fileids) {
+                App.Player.addAllAndPlayFirst(fileids);
+            });
         },
         addAll: function () {
-            var fileids = _.pluck(_m.model.files, "fileid");
-            App.Player.addAll(fileids);
+            getAllSongs().then(function (fileids) {
+                App.Player.addAll(fileids);
+            });
+        },
+        shuffleAll: function () {
+            getAllSongs().then(function (fileids) {
+                App.Player.shuffleAllAndPlayFirst(fileids);
+            });
         }
     };
 
-    var init = function (containerId) {
-        _m.containerSelector = "#" + containerId;
-        _m.$container = $(_m.containerSelector);
-        bindEventsOnce();
+    var getAllSongs = function () {
+        var deferred = $.Deferred();
+
+        var result = App.ViewModel.FileListViewModel.getFileIds(_m.model.songs);
+        var albumPromises = [];
+
+        _m.model.albumDirectories.forEach(function (albumViewModel) {
+            albumPromises.push(App.ViewModel.FileListViewModel.load(albumViewModel.file.fileid));
+        });
+
+        $.whenall(albumPromises).done(function (fileListVMPromisResults) {
+            var fileListVMResults = App.ViewModel.getArrayResult(fileListVMPromisResults);
+            fileListVMResults.forEach(function (fileListViewModel) {
+                var songFileids = App.ViewModel.FileListViewModel.getFileIds(fileListViewModel.songs);
+                result = result.concat(songFileids);
+            });
+            deferred.resolve(result);
+        });
+
+        return deferred.promise();
     };
 
     return {

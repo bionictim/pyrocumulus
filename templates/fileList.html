@@ -1,18 +1,22 @@
 ﻿<!-- NOTE: The parentid is one level too low. We need its parent. -->
 <div class="file-list-view">
-  <div class="controls file-info"
-    data-fileid="<%= parentDirectory.parentid %>"
-    data-type="<%= Pogoplug.Enums.FileType.directory %>">
-    <a data-command="select" href="" class="navigate up">UP
-    </a>
-    <% if (parentDirectoryViewModel instanceof App.ViewModel.AlbumDirectoryViewModel) { %>
+   <div class="toolbar">
+    <div class="controls file-info"
+      data-fileid="<%= parentDirectory.parentid %>"
+      data-type="<%= Pogoplug.Enums.FileType.directory %>">
+      <a data-command="select" href="" class="navigate up">
+        &larr;
+      </a>
       <a data-command="playAll" href="" class="play-all">
-        Play All
+        &#9654; &#10036;
       </a>
       <a data-command="addAll" href="" class="add-all">
-        Add All
+        &#43; &#10036;
       </a>
-    <% } %>
+      <a data-command="shuffleAll" href="" class="shuffle-all">
+        &#10020; &#10036;
+      </a>
+    </div>
     <div class="directory-info">
       <%= parentDirectoryViewModel.displayName %>
     </div>

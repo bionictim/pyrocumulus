@@ -1,0 +1,49 @@
+﻿
+#app ul.list {
+    width: 930px;
+}
+
+#app .list .item {
+    margin: 10px;
+}
+
+   #app  .list .item .image-container {
+        height: 160px;
+    }
+
+#app .list.directory .item,
+#app .list.file .item,
+#app .song-queue .list.file.song .item,
+#app .song-queue .list.file.song .item .item-select {
+    width: 160px;
+}
+
+#app .list.directory .item,
+#app .song-queue .list.file.song .item {
+    height: 200px;
+}
+
+#app .list.file .item {
+    height: 40px;
+}
+
+#app .list .item .meta-info {
+    min-height: 40px;
+}
+
+#app .list.song .item .item-select {
+    width: 280px;
+}
+
+#app .list.file.song .item {
+    width: 360px;
+    background: black;
+}
+
+#app .list.song .item .song-controls {
+    width: 80px;
+}
+
+    #app .list.song .item .song-controls a {
+        width: 40px;
+    }

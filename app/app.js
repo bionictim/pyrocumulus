@@ -6,7 +6,7 @@
     var Pogoplug = pogoplug;
 
     var Consts = {
-        version: "1.000027"
+        version: "1.000038"
     };
 
     var Section = {
@@ -21,6 +21,9 @@
     };
 
     var init = function () {
+        App.Cache.init();
+        App.Repository.init(App.Cache);
+
         // TODO: Refactor most of this to a "main" view, but this part stays in "app".
         App.View.init(Consts.version);
 

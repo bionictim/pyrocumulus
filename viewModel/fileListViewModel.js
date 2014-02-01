@@ -37,31 +37,38 @@
             getThumbnail: function (size) {
                 size = size || "small";
                 var result = null;
-                var candidates = [];
-                var bestCandidates = [];
 
-                if (!!this.images && this.images.length > 0) {
-                    for (var i = 0, len = this.images.length; i < len; i++) {
-                        // TODO: Get the right image.
-                        // TODO: optimize, repository?
-                        if (size === "small") {
-                            result = this.images[i];
-                            break;
-                        } else {
-                            var filename = this.images[i].file.filename.toLowerCase();
-                            if (size === "large") {
-                                if (filename.substr("small") < 0 && filename.substr("back") < 0) {
-                                    if (filename.substr("cover") >= 0)
-                                        bestCandidates.push(this.images[i]);
-                                    else
-                                        candidates.push(this.images[i]);
+                result = App.Cache.get(App.Cache.stores.thumbnails, this.parentDirectory.fileid);
+
+                if (!result) {
+                    var candidates = [];
+                    var bestCandidates = [];
+
+                    if (!!this.images && this.images.length > 0) {
+                        for (var i = 0, len = this.images.length; i < len; i++) {
+                            // TODO: Get the right image.
+                            // TODO: optimize, repository?
+                            if (size === "small") {
+                                result = this.images[i];
+                                break;
+                            } else {
+                                var filename = this.images[i].file.filename.toLowerCase();
+                                if (size === "large") {
+                                    if (filename.substr("small") < 0 && filename.substr("back") < 0) {
+                                        if (filename.substr("cover") >= 0)
+                                            bestCandidates.push(this.images[i]);
+                                        else
+                                            candidates.push(this.images[i]);
+                                    }
                                 }
                             }
                         }
+
+                        if (!result)
+                            result = this.images[0];
                     }
 
-                    if (!result)
-                        result = this.images[0];
+                    App.Cache.set(App.Cache.stores.thumbnails, this.parentDirectory.fileid, result);
                 }
 
                 return result;
@@ -69,48 +76,67 @@
         }, {
             load: function (directoryFileId) {
                 var deferred = $.Deferred();
-                var promises = [
-                    repository.getFile(directoryFileId),
-                    repository.getFiles(directoryFileId)
-                ];
+                var result;
 
-                $.whenall(promises).done(function (resultsArr) {
-                    var parentDirectory = App.ViewModel.getResult(resultsArr[0]);
-                    var fileList = App.ViewModel.getResult(resultsArr[1]);
+                result = App.Cache.get(App.Cache.stores.fileListViewModels, directoryFileId);
 
-                    var filePromises = [];
-                    fileList.files.forEach(function (file) {
-                        filePromises.push(repository.getFile(file.fileid));
+                if (!!result) {
+                    deferred.resolve(result);
+                } else {
+                    var promises = [
+                        repository.getFile(directoryFileId),
+                        repository.getFiles(directoryFileId)
+                    ];
+
+                    $.whenall(promises).done(function (resultsArr) {
+                        var parentDirectory = App.ViewModel.getResult(resultsArr[0]);
+                        var fileList = App.ViewModel.getResult(resultsArr[1]);
+
+                        var filePromises = [];
+                        fileList.files.forEach(function (file) {
+                            filePromises.push(repository.getFile(file.fileid));
+                        });
+
+                        $.whenall(filePromises).done(function (filePromiseResults) {
+                            var fileResults = App.ViewModel.getArrayResult(filePromiseResults);
+                            result = new FileListViewModel(parentDirectory, fileResults);
+                            result.loaded();
+                            App.Cache.set(App.Cache.stores.fileListViewModels, directoryFileId, result);
+
+                            deferred.resolve(result);
+                        });
                     });
-
-                    $.whenall(filePromises).done(function (filePromiseResults) {
-                        var fileResults = App.ViewModel.getArrayResult(filePromiseResults);
-                        var result = new FileListViewModel(parentDirectory, fileResults);
-                        result.loaded();
-                        deferred.resolve(result);
-                    });
-                });
+                }
 
                 return deferred.promise();
             },
 
-            getThumbnail: function (imageFiles) {
-                return !!imageFiles && imageFiles.length > 0 ? imageFiles[0] : null;
+            //getThumbnail: function (imageFiles) {
+            //    // Is this used?
+            //    return !!imageFiles && imageFiles.length > 0 ? imageFiles[0] : null;
 
-                //var result = null;
-                //var imageFiles = [];
-                //for (var i = 0, len = files.length; i < len; i++) {
-                //    // TODO: Optimize.
-                //    var fileType = App.ViewModel.FileViewModel.getFileType(files[0]);
-                //    if (fileType === App.ViewModel.FileListViewModel.FileType.image)
-                //        imageFiles.push(files[0]);
-                //}
+            //    //var result = null;
+            //    //var imageFiles = [];
+            //    //for (var i = 0, len = files.length; i < len; i++) {
+            //    //    // TODO: Optimize.
+            //    //    var fileType = App.ViewModel.FileViewModel.getFileType(files[0]);
+            //    //    if (fileType === App.ViewModel.FileListViewModel.FileType.image)
+            //    //        imageFiles.push(files[0]);
+            //    //}
 
-                //// TODO: Get the right one.
-                //if (imageFiles.length > 0)
-                //    result = imageFiles[0];
+            //    //// TODO: Get the right one.
+            //    //if (imageFiles.length > 0)
+            //    //    result = imageFiles[0];
 
-                //return result;
+            //    //return result;
+            //},
+
+            getFileIds: function (fileViewModelList) {
+                var result = [];
+                fileViewModelList.forEach(function (fileViewModel) {
+                    result.push(fileViewModel.file.fileid);
+                });
+                return result;
             }
         }
     );

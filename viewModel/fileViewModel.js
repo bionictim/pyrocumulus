@@ -37,82 +37,99 @@
             getFileType: function (file) {
                 var result;
 
-                if (file.type === Pogoplug.Enums.FileType.directory) {
-                    if (file.filename.substr(0, 1) === "_") {
-                        if (file.filename.substr(0, 2) === "__")
-                            result = FileViewModel.FileType.otherDirectory;
-                        else
-                            result = FileViewModel.FileType.genreDirectory;
-                    } else {
-                        result = FileViewModel.FileType.albumDirectory;
-                    }
-                } else if (file.type === Pogoplug.Enums.FileType.file) {
-                    var audioPrefix = "audio";
-                    var imagePrefix = "image";
+                result = App.Cache.get(App.Cache.stores.fileTypes, file.fileid);
 
-                    if (file.mimetype.substr(0, audioPrefix.length) === audioPrefix)
-                        result = FileViewModel.FileType.song;
-                    else if (file.mimetype.substr(0, imagePrefix.length) === imagePrefix)
-                        result = FileViewModel.FileType.image;
-                    else
-                        result = FileViewModel.FileType.otherFile;
-                } else {
-                    throw "Unsupported file.type";
+                if (!result) {
+                    if (file.type === Pogoplug.Enums.FileType.directory) {
+                        if (file.filename.substr(0, 1) === "_") {
+                            if (file.filename.substr(0, 2) === "__")
+                                result = FileViewModel.FileType.otherDirectory;
+                            else
+                                result = FileViewModel.FileType.genreDirectory;
+                        } else {
+                            result = FileViewModel.FileType.albumDirectory;
+                        }
+                    } else if (file.type === Pogoplug.Enums.FileType.file) {
+                        var audioPrefix = "audio";
+                        var imagePrefix = "image";
+
+                        if (file.mimetype.substr(0, audioPrefix.length) === audioPrefix)
+                            result = FileViewModel.FileType.song;
+                        else if (file.mimetype.substr(0, imagePrefix.length) === imagePrefix)
+                            result = FileViewModel.FileType.image;
+                        else
+                            result = FileViewModel.FileType.otherFile;
+                    } else {
+                        throw "Unsupported file.type";
+                    }
+
+                    App.Cache.set(App.Cache.stores.fileTypes, file.fileid, result);
                 }
 
                 return result;
             },
 
             getSongInfo: function (fileName, artistName, albumName) {
-                var trackNumber;
-                var songName;
-                var extension;
+                var result;
+                var cacheKey = fileName + "-" + artistName + "-" + albumName;
 
-                var cleanedFileName = fileName.replace(/_/g, " ");
+                result = App.Cache.get(App.Cache.stores.songInfos, cacheKey);
 
-                if (cleanedFileName.lastIndexOf("-") == cleanedFileName.length - 4)
-                    cleanedFileName = songName.substring(0, cleanedFileName.length - 4).trim();
+                if (!result) {
+                    var trackNumber;
+                    var songName;
+                    var extension;
 
-                var parts = cleanedFileName.split(" ");
+                    var cleanedFileName = fileName.replace(/_/g, " ");
 
-                try {
-                    if (parts[0].isNumeric()) {
-                        trackNumber = parts[0];
-                        parts.shift();
-                        cleanedFileName = parts.join(" ");
-                    }
+                    if (cleanedFileName.lastIndexOf("-") == cleanedFileName.length - 4)
+                        cleanedFileName = songName.substring(0, cleanedFileName.length - 4).trim();
 
-                    var file = cleanedFileName.replace(artistName, "-");
-                    file = file.replace(albumName, "-");
-                    parts = file.split("-");
-                    var parts2 = [];
+                    var parts = cleanedFileName.split(" ");
 
-                    for (i = 0; i < parts.length; i++) {
-                        var s = parts[i].trim();
+                    try {
+                        if (parts[0].isNumeric()) {
+                            trackNumber = parts[0];
+                            parts.shift();
+                            cleanedFileName = parts.join(" ");
+                        }
 
-                        if (s.isNumeric() && trackNumber == null)
-                            trackNumber = s;
-                        else if (s != "")
-                            parts2.push(s);
-                    }
+                        var file = cleanedFileName.replace(artistName, "-");
+                        file = file.replace(albumName, "-");
+                        parts = file.split("-");
+                        var parts2 = [];
 
-                    if (parts2.length == 0)
-                        songName = albumName;
-                    else
-                        songName = parts2.join(" - ");
+                        for (i = 0; i < parts.length; i++) {
+                            var s = parts[i].trim();
 
-                    var lastDotIndex = songName.lastIndexOf(".");
-                    if (lastDotIndex !== -1) {
-                        extension = songName.substr(lastDotIndex + 1);
-                        songName = songName.substr(0, lastDotIndex);
-                    }
-                } catch (err) { }                
+                            if (s.isNumeric() && trackNumber == null)
+                                trackNumber = s;
+                            else if (s != "")
+                                parts2.push(s);
+                        }
 
-                return {
-                    songName: songName,
-                    trackNumber: trackNumber,
-                    extension: extension
-                };
+                        if (parts2.length == 0)
+                            songName = albumName;
+                        else
+                            songName = parts2.join(" - ");
+
+                        var lastDotIndex = songName.lastIndexOf(".");
+                        if (lastDotIndex !== -1) {
+                            extension = songName.substr(lastDotIndex + 1);
+                            songName = songName.substr(0, lastDotIndex);
+                        }
+                    } catch (err) { }
+
+                    result = {
+                        songName: songName,
+                        trackNumber: trackNumber,
+                        extension: extension
+                    };
+
+                    App.Cache.set(App.Cache.stores.songInfos, cacheKey, result);
+                }
+
+                return result;
             },
 
             load: function (fileid) {

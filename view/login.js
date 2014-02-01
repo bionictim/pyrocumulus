@@ -84,11 +84,13 @@
             var data = $(this).serializeFormJSON();
 
             if (!data.email || !data.password) {
-                // Invalid.
+                alert("Please enter your email and password.");
             } else {
                 var request = Pogoplug.login(data.email, data.password);
                 request.then(function (data, status) {
                     callbacks.loggedIn(data.user);
+                }, function () { // jqXHR, textStatus, errorThrown
+                    alert("Login failed.");
                 });
             }
 

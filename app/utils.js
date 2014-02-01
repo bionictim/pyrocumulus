@@ -28,6 +28,16 @@
             $img.attr("src", imageUrl);
         },
 
+        shuffle: function (array) {
+            var n = array.length;
+            for (var i = n - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var tmp = array[i];
+                array[i] = array[j];
+                array[j] = tmp;
+            }
+        },
+
         Binding: {
             process: function (element, data) {
                 //var $element = $(element);

@@ -6,7 +6,8 @@
     var EJS = ejs;
 
     var Consts = {
-        viewName: "player"
+        viewName: "player",
+        queuePageSize: 50
     };
 
     var _m = {
@@ -19,7 +20,9 @@
         $queue: null,
         audio: null,
         songList: [],
-        currentSongIndex: 0
+        currentSongIndex: 0,
+        currentQueuePage: 0,
+        hasScrolledQueue: false
     };
 
     var init = function (containerId) {
@@ -47,6 +50,21 @@
             _m.$queue = _m.$container.find(".song-queue");
             handleResize();
             commands.toggleVisibility();
+
+            // TODO: Optimize
+            _m.$queue.bind('scroll', function () {
+                var $scroller = $(this);
+                var scrollLeft = $scroller.scrollLeft();
+
+                if (scrollLeft > 0)
+                    _m.hasScrolledQueue = true;
+
+                if (scrollLeft === 0 && _m.hasScrolledQueue) {
+                    renderPreviousQueuePage();
+                } else if (scrollLeft + $scroller.innerWidth() >= $scroller[0].scrollWidth) {
+                    renderNextQueuePage();
+                }
+            })
         }
     };
 
@@ -100,7 +118,18 @@
         },
         clearQueue: function () {
             commands.stop();
-            clearSongList();
+            _m.songList = [];
+            _m.currentQueuePage = 0;
+            renderQueue().done();
+        },
+        shuffleQueue: function () {
+            commands.stop();
+            if (_m.songList.length > 0) {
+                App.Utils.shuffle(_m.songList);
+                _m.currentSongIndex = 0;
+            }
+            _m.currentQueuePage = 0;
+            renderQueue().done();
         },
         select: function (e) {
             var $item = $(e.currentTarget).closest(".item");
@@ -157,21 +186,24 @@
         renderQueue().done();
     };
 
-    var addAllAndPlayFirst = function (fileids) {
+    var addAllAndPlayFirst = function (fileids, shuffle) {
         _m.songList = _m.songList.concat(fileids);
+
+        if (!!shuffle)
+            commands.shuffleQueue();
+
         _.defer(function () { renderQueue().done(); });
         _m.currentSongIndex = _m.songList.length - fileids.length;
         loadSong();
         commands.play();
     };
 
-    var addAll = function (fileids) {
-        _m.songList = _m.songList.concat(fileids);
-        renderQueue().done();
+    var shuffleAllAndPlayFirst = function (fileids) {
+        addAllAndPlayFirst(fileids, true);
     };
 
-    var clearSongList = function () {
-        _m.songList = [];
+    var addAll = function (fileids) {
+        _m.songList = _m.songList.concat(fileids);
         renderQueue().done();
     };
 
@@ -181,11 +213,23 @@
         _m.audio.removeAttribute("src");
     };
 
+    var getSongListPage = function () {
+        var beginIndex = _m.currentQueuePage * Consts.queuePageSize;
+        var endIndex = (_m.currentQueuePage + 1) * Consts.queuePageSize;
+        var result = _m.songList.slice(beginIndex, endIndex);
+
+        return result;
+    };
+
     var renderQueue = function () {
         var deferred = $.Deferred();
 
+        _m.hasScrolledQueue = false;
+
         var fileVMPromises = [];
-        _m.songList.forEach(function (fileid) {
+        var songListPage = getSongListPage();
+
+        songListPage.forEach(function (fileid) {
             fileVMPromises.push(App.ViewModel.FileViewModel.load(fileid));
         });
 
@@ -196,7 +240,7 @@
             var fileResults = App.ViewModel.getArrayResult(fileVMPromiseResults);
             _m.$queue.html(App.View.render("itemList", { list: fileResults }));
             var itemWidth = _m.$queue.find(".item").first().outerWidth(true);
-            _m.$queue.find(".list").width(itemWidth * fileResults.length + 200); // TODO: Remove 200 when we trust the calculation.
+            _m.$queue.find(".list").width(itemWidth * fileResults.length + 20); // TODO: Remove 20 when we trust the calculation.
 
             fileVMPromiseResults.forEach(function (fileVMPromiseResult) {
                 var songViewModel = fileVMPromiseResult[0];
@@ -222,6 +266,22 @@
         return deferred.promise();
     };
 
+    var renderNextQueuePage = function () {
+        var currentPage = _m.currentQueuePage;
+        _m.currentQueuePage = Math.min(_m.currentQueuePage + 1, Math.ceil(_m.songList.length / Consts.queuePageSize) - 1);
+
+        if (currentPage !== _m.currentQueuePage)
+            renderQueue();
+    };
+
+    var renderPreviousQueuePage = function () {
+        var currentPage = _m.currentQueuePage;
+        _m.currentQueuePage = Math.max(_m.currentQueuePage - 1, 0);
+
+        if (currentPage !== _m.currentQueuePage)
+            renderQueue();
+    };
+
     // TODO: Something nicer.
     var updateNowPlaying = function (songViewModel, parentDirectoryViewModel) {
         _m.$nowPlaying.find("[data-bind]").each(function (i, el) {
@@ -237,6 +297,7 @@
         playSong: playSong,
         addSong: addSong,
         addAllAndPlayFirst: addAllAndPlayFirst,
+        shuffleAllAndPlayFirst: shuffleAllAndPlayFirst,
         addAll: addAll,
         handleResize: handleResize
     };
