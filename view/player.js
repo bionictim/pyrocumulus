@@ -49,7 +49,7 @@
             _m.$nowPlaying = _m.$container.find("#nowPlaying");
             _m.$queue = _m.$container.find(".song-queue");
             handleResize();
-            commands.toggleVisibility();
+            commands.toggleVisibility(false);
 
             // TODO: Optimize
             _m.$queue.bind('scroll', function () {
@@ -86,9 +86,14 @@
     };
 
     var handleResize = function () {
+        var winHeight = $(window).height();
         _m.$positioner.css({
-            height: $(window).height() + "px"
+            height: winHeight + "px"
         });
+        //var $drawer = $(".drawer");
+        //var pos = $drawer.position();
+        //var pospos = _m.$positioner.position();
+        //App.Utils.Debug.write("w:" + winHeight + ",d:" + $drawer.height() + "," + $drawer.is(":visible") + ";" + pos.left + "," + pos.top + ";" + pospos.left + "," + pospos.top + "b:" + $drawer.css("bottom"));
     };
 
     var commands = {
@@ -113,8 +118,8 @@
             loadSong();
             commands.play();
         },
-        toggleVisibility: function () {
-            if (_m.$drawer.hasClass("collapsed")) {
+        toggleVisibility: function (forceState) {
+            if (forceState === true || (forceState !== false && _m.$drawer.hasClass("collapsed"))) {
                 _m.$drawer.removeClass("collapsed");
                 _m.$drawer.css({ bottom: 0 + "px" });
             } else {
@@ -127,6 +132,7 @@
             commands.stop();
             _m.songList = [];
             _m.currentQueuePage = 0;
+            _m.$nowPlaying.find(".current-song-info").hide(); // TODO: Something better.
             renderQueue().done();
         },
         shuffleQueue: function () {
@@ -205,6 +211,7 @@
             _m.currentSongIndex = _m.songList.length - fileids.length;
             loadSong();
             commands.play();
+            commands.toggleVisibility(true);
         });
     };
 
@@ -214,7 +221,9 @@
 
     var addAll = function (fileids) {
         _m.songList = _m.songList.concat(fileids);
-        renderQueue().done();
+        renderQueue().then(function () {
+            commands.toggleVisibility(true);
+        });
     };
 
     var clearSong = function () {
@@ -296,7 +305,9 @@
 
         if (currentPage !== _m.currentQueuePage)
             renderQueue().then(function () {
-                _m.$queue.scrollLeft(_m.$queue[0].scrollWidth);
+                _.defer(function () {
+                    _m.$queue.scrollLeft(_m.$queue[0].scrollWidth);
+                });
             });
     };
 
@@ -307,15 +318,16 @@
     var updateNowPlaying = function (songViewModel) {
         var updateUI = function () {
             // TODO: A view?
+            var $songInfo = _m.$nowPlaying.find(".current-song-info");
             _m.$nowPlaying.find("[data-bind]").each(function (i, el) {
                 var $el = $(el);
                 var prop = $el.data("bind");
                 var val = songViewModel[prop];
                 $el.html(val);
             });
+            $songInfo.show(); // TODO: Something better.
 
             // HACK to get song info P tag to size to fit.
-            var $songInfo = _m.$nowPlaying.find(".current-song-info");
             $songInfo.width($songInfo.width() + "px");
             _.defer(function () { $songInfo.css("width", ""); });
 

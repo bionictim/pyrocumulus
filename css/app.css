@@ -115,8 +115,8 @@ audio {
     .controls a {
         background: black;
         display: inline-block;
-        margin: 0 0 10px 10px;
-        border: 2px solid grey;
+        margin: 0 0 0px 10px;
+        border: 2px solid #404040;
         border-radius: 20px;
         padding: 8px 8px;
     }
@@ -128,8 +128,11 @@ audio {
     top: 0;
     z-index: 100;
     width: 100%;
-    border-bottom: 1px solid grey;
-    background: grey;
+    border-bottom: 2px solid #404040;
+}
+
+.overlay {
+    background: #404040;
     background-image: -moz-linear-gradient(top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.3) 10%, rgba(0,0,0,0) 39%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.3) 87%, rgba(0,0,0,0.65) 100%), url(../images/background-texture-dots.jpg);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.65)), color-stop(10%,rgba(0,0,0,0.3)), color-stop(39%,rgba(0,0,0,0)), color-stop(60%,rgba(0,0,0,0)), color-stop(87%,rgba(0,0,0,0.3)), color-stop(100%,rgba(0,0,0,0.65))), url(../images/background-texture-dots.jpg);
     background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.3) 10%,rgba(0,0,0,0) 39%,rgba(0,0,0,0) 60%,rgba(0,0,0,0.3) 87%,rgba(0,0,0,0.65) 100%), url(../images/background-texture-dots.jpg);
@@ -205,6 +208,10 @@ ul.list {
     width: 28vw;
 }
 
+/*.song-queue {
+    height: 28vw;
+}*/
+
 .list.file.song .item {
     width: 36vw;
     background: black;
@@ -258,6 +265,10 @@ ul.list {
         width: 66vw;
     }
 
+    /*.song-queue {
+        height: 66vw;
+    }*/
+
     .list.file.song .item {
         width: 82vw;
     }
@@ -287,6 +298,10 @@ ul.list {
 
 .file-list-view .list:last-child {
     margin-bottom: 200px;
+}
+
+.file-list-view .list.file.song {
+    margin-top: 30px;
 }
 
 .list .item {
@@ -344,9 +359,18 @@ ul.list {
     text-transform: capitalize;
 }
 
-    .list .item .meta-info > * {
+    .list .item .meta-info > span {
+        padding: 0 5px;
         display: block;
     }
+
+        .list .item .meta-info > span:first-child {
+            padding-top: 5px;
+        }
+
+        .list .item .meta-info > span:last-child {
+            padding-bottom: 5px;
+        }
 
     .list .item .meta-info .artist {
         font-size: 13px;
@@ -362,6 +386,10 @@ ul.list {
         display: none;
     }
 
+.list.genreDirectory .item .meta-info {
+    font-size: 20px;
+}
+
 .song-queue .list .item .meta-info {
     font-size: 16px;
 }
@@ -373,6 +401,7 @@ ul.list {
 .list.file.song .item {
     clear: both;
     margin-bottom: 0;
+    margin-top: 0;
 }
 
     .list.file.song .item > * {
@@ -380,19 +409,20 @@ ul.list {
         float: left;
     }
 
-.list.file.song .item .meta-info {
-    text-align: left;
-}
+    .list.file.song .item .meta-info {
+        text-align: left;
+        font-size: 16px;
+    }
 
 .song-queue .list.song .item .meta-info {
     padding: 5%;
     width: 90%;
 }
 
-    .list.song .item .meta-info > * {
-        display: inline-block;
-        margin-right: 4px;
-    }
+.list.song .item .meta-info > * {
+    display: inline-block;
+    margin-right: 4px;
+}
 
 .song-queue .list.song .item .meta-info > * {
     clear: both;
@@ -429,26 +459,27 @@ ul.list {
 
     .player-view .positioner {
         height: 100%;
-        width: 0;
+        width: 1px;
         position: relative;
+        top: 0;
+        left: -1px;
     }
 
         .player-view .positioner .drawer {
-            border-top: 2px solid #3C3C3C;
+            border-top: 2px solid #404040;
             padding-top: 10px;
             position: absolute;
             bottom: 0;
             width: 100vw;
             transition: bottom 250ms ease-out;
-            background-image: url(../images/background-texture-dots.jpg);
         }
 
     .player-view .drawer .toggle {
         position: absolute;
         height: 30px;
         top: -32px;
-        right: 30px;
-        border: 2px solid #3C3C3C;
+        right: 20px;
+        border: 2px solid #404040;
         border-bottom: none;
         border-top-left-radius: 15px;
         border-top-right-radius: 15px;
@@ -480,6 +511,7 @@ ul.list {
         float: right;
         margin: 0 20px 0 11px;
         min-width: 150px;
+        display: none;
     }
 
         #nowPlaying .current-song-info > span {
@@ -512,7 +544,7 @@ ul.list {
             }
 
     .song-queue .item {
-        border: 3px solid rgba(0,0,0,0);
+        border: 3px solid transparent;
     }
 
         .song-queue .item.selected {

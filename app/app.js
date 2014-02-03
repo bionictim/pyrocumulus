@@ -6,7 +6,7 @@
     var Pogoplug = pogoplug;
 
     var Consts = {
-        version: "1.000045"
+        version: "1.000046"
     };
 
     var Section = {
@@ -120,8 +120,10 @@
     };
 
     var handleResize = function (e) {
-        App.Player.handleResize();
-        App.FileList.handleResize();
+        _.delay(function () {
+            App.FileList.handleResize();
+            App.Player.handleResize();
+        }, 100);
     };
 
     var render = function () {
@@ -136,7 +138,8 @@
     };
 
     return {
-        init: init
+        init: init,
+        handleResize: handleResize
     };
 
 })($, _, Pogoplug);

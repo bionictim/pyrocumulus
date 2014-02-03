@@ -1,7 +1,7 @@
 ﻿(function () {
     App.Utils = {
         settings: {
-            defaultThumbnail: "images/missing.png"
+            defaultThumbnail: "images/background-carbon-fiber.jpg" //"images/missing.png"
         },
 
         getThumbnailUrl: function (url) {
@@ -38,6 +38,21 @@
             }
         },
 
+        grabImages: function (url) {
+            url = url.replace("http://", "").replace("https://", "");
+            url = "pyroxy1/" + url;
+
+            return $.ajax({
+                url:url,
+                success: function (data) {
+                    var $img = $(data).find("img");
+                    $("body").append("<div id='zzz' style='position:absolute;z-index:2000;'></div>");
+                    $img.each(function (i, o) { $("#zzz").append(o); })
+                }
+            })
+
+        },
+
         Binding: {
             process: function (element, data) {
                 //var $element = $(element);
@@ -52,6 +67,22 @@
             },
             decrypt: function (val) {
                 return val;
+            }
+        },
+
+        Debug: {
+            _$debug: null,
+
+            write: function (message) {
+                if (!App.Utils.Debug._$debug) {
+                    App.Utils.Debug._$debug = $("<div id='debug' style='position:fixed;z-index:1000;top:0;right:0'></div>");
+                    $("body").append(App.Utils.Debug._$debug);
+                    App.Utils.Debug._$debug.click(function () {
+                        $(this).html("");
+                    });
+                }
+
+                App.Utils.Debug._$debug.html(App.Utils.Debug._$debug.html() + "<br />" + message);
             }
         }
     };
