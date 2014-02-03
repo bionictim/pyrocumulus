@@ -1,4 +1,4 @@
-﻿<li class="item file-info"
+﻿<li class="item file-info floating"
   data-fileid="<%= file.fileid %>"
   data-type="<%= file.type %>"
   data-filetype="<%= fileType %>">
@@ -12,8 +12,11 @@
         <span class="album"><%= album %></span>
         <span class="meta"><%= meta %></span>
       <% } else { %>
-        <% if (!!this["trackNumber"]) { %>
-          <span class="track-number"><%= trackNumber %></span>
+        <% if (this instanceof App.ViewModel.SongViewModel) { %>
+          <span class="artist"><%= artist %></span>
+          <% if (!!this["trackNumber"]) { %>
+            <span class="track-number"><%= trackNumber %></span>
+          <% } %>
         <% } %>
         <span class="name"><%= displayName %></span>
       <% } %>

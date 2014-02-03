@@ -64,7 +64,14 @@
                 } else if (scrollLeft + $scroller.innerWidth() >= $scroller[0].scrollWidth) {
                     renderNextQueuePage();
                 }
-            })
+            });
+
+            _m.$queue.bind('mousewheel', function (e, delta) {
+                e.preventDefault();
+                var wheelEvent = e.originalEvent;
+                _m.$queue[0].scrollLeft += wheelEvent.deltaY;
+
+            });
         }
     };
 
@@ -154,7 +161,9 @@
     };
 
     var loadSong = function (index) {
-        index = index || _m.currentSongIndex;
+        if (typeof index === "undefined" || index === null)
+            index = _m.currentSongIndex;
+
         _m.currentSongIndex = index;
 
         if (index >= _m.songList.length) {
@@ -164,7 +173,7 @@
             _m.audio.src = Pogoplug.getFileStreamUrl(_m.songList[index]);
 
             App.ViewModel.FileViewModel.load(_m.songList[index]).then(function (fileViewModel, parentDirectoryViewModel) {
-                updateNowPlaying(fileViewModel, parentDirectoryViewModel);
+                updateNowPlaying(fileViewModel);
             });
 
             return true;
@@ -174,11 +183,11 @@
     var playSong = function (fileid) {
         clearSong();
         _m.songList.push(fileid);
-        _.defer(function () { renderQueue().done(); });
-        _m.currentSongIndex = _m.songList.length - 1;
-        loadSong();
-        //_m.audio.src = url;
-        commands.play();
+        renderQueue().then(function () {
+            _m.currentSongIndex = _m.songList.length - 1;
+            loadSong();
+            commands.play();
+        });
     };
 
     var addSong = function (fileid) {
@@ -192,10 +201,11 @@
         if (!!shuffle)
             commands.shuffleQueue();
 
-        _.defer(function () { renderQueue().done(); });
-        _m.currentSongIndex = _m.songList.length - fileids.length;
-        loadSong();
-        commands.play();
+        renderQueue().then(function () {
+            _m.currentSongIndex = _m.songList.length - fileids.length;
+            loadSong();
+            commands.play();
+        });
     };
 
     var shuffleAllAndPlayFirst = function (fileids) {
@@ -235,16 +245,20 @@
 
         $.whenall(fileVMPromises).done(function (fileVMPromiseResults) {
             // This is lame, but it should be an array of two return args (2-item arr), but if only one promise, the result is one 2-item arr.
+            // TODO: Improve $.whenall
             fileVMPromiseResults = fileVMPromises.length === 1 ? [fileVMPromiseResults] : fileVMPromiseResults;
 
             var fileResults = App.ViewModel.getArrayResult(fileVMPromiseResults);
             _m.$queue.html(App.View.render("itemList", { list: fileResults }));
+
             var itemWidth = _m.$queue.find(".item").first().outerWidth(true);
-            _m.$queue.find(".list").width(itemWidth * fileResults.length + 20); // TODO: Remove 20 when we trust the calculation.
+            var paddingAfterLast = 20; // Should probably match CSS.
+            _m.$queue.find(".list").width(itemWidth * fileResults.length + paddingAfterLast);
 
             fileVMPromiseResults.forEach(function (fileVMPromiseResult) {
                 var songViewModel = fileVMPromiseResult[0];
                 var directoryViewModel = fileVMPromiseResult[1];
+
                 App.ViewModel.FileListViewModel.load(songViewModel.file.parentid).then(function (fileListViewModel) {
                     var thumbnailFile = fileListViewModel.getThumbnail();
                     if (!!thumbnailFile) {
@@ -268,7 +282,7 @@
 
     var renderNextQueuePage = function () {
         var currentPage = _m.currentQueuePage;
-        _m.currentQueuePage = Math.min(_m.currentQueuePage + 1, Math.ceil(_m.songList.length / Consts.queuePageSize) - 1);
+        _m.currentQueuePage = Math.min(_m.currentQueuePage + 1, getQueuePage(_m.songList.length - 1));
 
         if (currentPage !== _m.currentQueuePage)
             renderQueue();
@@ -276,20 +290,35 @@
 
     var renderPreviousQueuePage = function () {
         var currentPage = _m.currentQueuePage;
-        _m.currentQueuePage = Math.max(_m.currentQueuePage - 1, 0);
+        _m.currentQueuePage = Math.max(_m.currentQueuePage - 1, getQueuePage(0));
 
         if (currentPage !== _m.currentQueuePage)
-            renderQueue();
+            renderQueue().then(function () {
+                _m.$queue.scrollLeft(_m.$queue[0].scrollWidth);
+            });
     };
 
-    // TODO: Something nicer.
-    var updateNowPlaying = function (songViewModel, parentDirectoryViewModel) {
+    var getQueuePage = function (songIndex) {
+        return Math.floor(songIndex / Consts.queuePageSize);
+    };
+
+    var updateNowPlaying = function (songViewModel) {
+        // TODO: A view?
         _m.$nowPlaying.find("[data-bind]").each(function (i, el) {
             var $el = $(el);
             var prop = $el.data("bind");
             var val = songViewModel[prop];
             $el.html(val);
         });
+
+        _m.$queue.find(".selected").removeClass("selected");
+
+        if (_m.currentQueuePage === getQueuePage(_m.currentSongIndex)) {
+            var index = _m.currentSongIndex % Consts.queuePageSize;
+            _m.$queue.find(".item")
+                .eq(index)
+                .addClass("selected");
+        }
     };
 
     return {

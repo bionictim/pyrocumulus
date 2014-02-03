@@ -14,7 +14,7 @@ body, html {
 
 a, a:visited {
     text-decoration: none;
-    color: #fff;
+    color: #dedede;
     font-size: 16px;
 }
 
@@ -29,6 +29,11 @@ section {
 
 .hidden {
     display: none !important;
+}
+
+.floating {
+    -webkit-box-shadow: 0 0 30px 3px rgba(0,0,0,1);
+    box-shadow: 0 0 30px 3px rgba(0,0,0,1);
 }
 
 #login {
@@ -84,14 +89,16 @@ section {
         z-index: -100;
         height: 100vh;
         width: 100%;
-        background: #404142; /* Old browsers */
-        background: -moz-radial-gradient(right bottom, farthest-side, #404142 0%, #2c2d2d 42%, #000000 100%); /* FF3.6+ */
-        background: -webkit-gradient(radial, 100% 100%, 0px, 100% 100%, 100%, color-stop(0%,#404142), color-stop(42%,#2c2d2d), color-stop(100%,#000000)); /* Chrome,Safari4+ */
-        background: -webkit-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%); /* Chrome10+,Safari5.1+ */
-        background: -o-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%); /* Opera 12+ */
-        background: -ms-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%); /* IE10+ */
-        background: radial-gradient(farthest-side at right bottom, #404142 0%,#2c2d2d 42%,#000000 100%); /* W3C */
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404142', endColorstr='#000000',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+        /*background: #404142;
+        background: -moz-radial-gradient(right bottom, farthest-side, #404142 0%, #2c2d2d 42%, #000000 100%);
+        background: -webkit-gradient(radial, 100% 100%, 0px, 100% 100%, 100%, color-stop(0%,#404142), color-stop(42%,#2c2d2d), color-stop(100%,#000000));
+        background: -webkit-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%);
+        background: -o-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%);
+        background: -ms-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%);
+        background: radial-gradient(farthest-side at right bottom, #404142 0%,#2c2d2d 42%,#000000 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404142', endColorstr='#000000',GradientType=1 );*/
+        background-image: url(../images/background-wall-cracks.jpg);
+        background-size: cover;
     }
 
 /* Controls */
@@ -108,7 +115,7 @@ audio {
     .controls a {
         display: inline-block;
         margin: 0 0 10px 10px;
-        border: 2px solid white;
+        border: 2px solid #dedede;
         border-radius: 20px;
         padding: 8px 8px;
     }
@@ -116,10 +123,20 @@ audio {
 .toolbar {
     padding-top: 8px;
     float: left;
-    position: relative;
+    position: fixed;
+    top: 0;
+    z-index: 100;
     width: 100%;
     border-bottom: 1px solid grey;
-    background: black;
+    background: grey;
+    background-image: -moz-linear-gradient(top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.3) 10%, rgba(0,0,0,0) 39%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.3) 87%, rgba(0,0,0,0.65) 100%), url(../images/background-texture-dots.jpg);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.65)), color-stop(10%,rgba(0,0,0,0.3)), color-stop(39%,rgba(0,0,0,0)), color-stop(60%,rgba(0,0,0,0)), color-stop(87%,rgba(0,0,0,0.3)), color-stop(100%,rgba(0,0,0,0.65))), url(../images/background-texture-dots.jpg);
+    background-image: -webkit-linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.3) 10%,rgba(0,0,0,0) 39%,rgba(0,0,0,0) 60%,rgba(0,0,0,0.3) 87%,rgba(0,0,0,0.65) 100%), url(../images/background-texture-dots.jpg);
+    background-image: -o-linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.3) 10%,rgba(0,0,0,0) 39%,rgba(0,0,0,0) 60%,rgba(0,0,0,0.3) 87%,rgba(0,0,0,0.65) 100%), url(../images/background-texture-dots.jpg);
+    background-image: -ms-linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.3) 10%,rgba(0,0,0,0) 39%,rgba(0,0,0,0) 60%,rgba(0,0,0,0.3) 87%,rgba(0,0,0,0.65) 100%), url(../images/background-texture-dots.jpg);
+    background-image: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0.3) 10%,rgba(0,0,0,0) 39%,rgba(0,0,0,0) 60%,rgba(0,0,0,0.3) 87%,rgba(0,0,0,0.65) 100%), url(../images/background-texture-dots.jpg);
+    /*background-image: url(../images/background-texture-dots.jpg);*/
+    background-size: cover;
 }
 
 .file-list-view .controls {
@@ -320,8 +337,8 @@ ul.list {
     position: absolute;
     bottom: 0;
     left: 0;
-    background: rgba(128, 128, 128, .5);
-    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    color: #dedede;
     font-size: 11px;
     text-transform: capitalize;
 }
@@ -344,6 +361,14 @@ ul.list {
         display: none;
     }
 
+.song-queue .list .item .meta-info {
+    font-size: 24px;
+}
+
+    .song-queue .list .item .meta-info .artist {
+        font-size: 18px;
+    }
+
 .list.file.song .item {
     clear: both;
     margin-bottom: 0;
@@ -355,14 +380,24 @@ ul.list {
     }
 
 .list.song .item .meta-info {
+    padding: 5%;
     text-align: left;
-    width: 100%;
+    width: 90%;
 }
 
     .list.song .item .meta-info > * {
         display: inline-block;
         margin-right: 4px;
     }
+
+.song-queue .list.song .item .meta-info > * {
+    clear: both;
+}
+
+.song-queue .list.song .item .meta-info .track-number,
+.file-list-view .list.song .item .meta-info .artist {
+    display: none;
+}
 
 .list.song .item .song-controls {
     height: 100%;
@@ -385,7 +420,7 @@ ul.list {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 100;
+    z-index: 101;
 }
 
     .player-view .positioner {
@@ -395,19 +430,21 @@ ul.list {
     }
 
         .player-view .positioner .drawer {
-            border-top: 1px solid white;
+            border-top: 2px solid #3C3C3C;
             padding-top: 10px;
             position: absolute;
             bottom: 0;
             width: 100vw;
             transition: bottom 250ms ease-out;
+            background-image: url(../images/background-texture-dots.jpg);
         }
 
     .player-view .drawer .toggle {
         position: absolute;
-        top: -20px;
-        right: 20px;
-        border: 1px solid white;
+        height: 30px;
+        top: -32px;
+        right: 30px;
+        border: 2px solid #3C3C3C;
         border-bottom: none;
         border-top-left-radius: 15px;
         border-top-right-radius: 15px;
@@ -415,19 +452,17 @@ ul.list {
 
     .player-view .positioner .drawer,
     .player-view .drawer .toggle {
-         background: #3C3C3C;
+        background-color: #000;
+        background-size: cover;
     }
 
 .player .controls a {
     font-size: 18px;
-    width:15px;
-    height:15px;
+    width: 15px;
+    height: 15px;
     line-height: 18px;
     border-radius: 30px;
     padding: 6px 8px 10px 8px;
-}
-
-.drawer {
 }
 
 #nowPlaying {
@@ -453,6 +488,7 @@ ul.list {
         width: 100%; /* Dynamically altered when items are added. */
     }
 
+        /* TODO: Too specific? */
         .song-queue .list.file.song .item {
             clear: none;
         }
@@ -460,3 +496,11 @@ ul.list {
             .song-queue .list.file.song .item .song-controls {
                 display: none;
             }
+
+    .song-queue .item {
+        border: 3px solid rgba(0,0,0,0);
+    }
+
+        .song-queue .item.selected {
+            border-color: darkred;
+        }

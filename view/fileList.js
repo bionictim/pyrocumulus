@@ -35,7 +35,8 @@
             var html = App.View.render(Consts.viewName, model);
             _m.$container.html(html);
 
-            window.scrollTo(0);
+            window.scrollTo(1);
+            _.defer(function () { handleResize(); });
 
             model.albumDirectories.forEach(function (dir) {
                 App.ViewModel.FileListViewModel.load(dir.file.fileid).then(function (viewModel) {
@@ -86,6 +87,12 @@
 
             commands[command](itemData);
         });
+    };
+
+    var handleResize = function () {
+        var toolbarHeight = _m.$container.find(".toolbar").outerHeight(true);
+        var $listSection = _m.$container.find(".list-section");
+        $listSection.css("margin-top", toolbarHeight + "px");
     };
 
     var commands = {
@@ -151,6 +158,7 @@
         setCallback: setCallback,
         init: init,
         render: render,
+        handleResize: handleResize,
         getModel: function () { return _m.model; }
     };
 

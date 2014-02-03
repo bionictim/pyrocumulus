@@ -6,7 +6,7 @@
     var Pogoplug = pogoplug;
 
     var Consts = {
-        version: "1.000038"
+        version: "1.000042"
     };
 
     var Section = {
@@ -121,6 +121,7 @@
 
     var handleResize = function (e) {
         App.Player.handleResize();
+        App.FileList.handleResize();
     };
 
     var render = function () {
