@@ -113,9 +113,10 @@ audio {
 }
 
     .controls a {
+        background: black;
         display: inline-block;
         margin: 0 0 10px 10px;
-        border: 2px solid #dedede;
+        border: 2px solid grey;
         border-radius: 20px;
         padding: 8px 8px;
     }
@@ -362,7 +363,7 @@ ul.list {
     }
 
 .song-queue .list .item .meta-info {
-    font-size: 24px;
+    font-size: 16px;
 }
 
     .song-queue .list .item .meta-info .artist {
@@ -379,9 +380,12 @@ ul.list {
         float: left;
     }
 
-.list.song .item .meta-info {
-    padding: 5%;
+.list.file.song .item .meta-info {
     text-align: left;
+}
+
+.song-queue .list.song .item .meta-info {
+    padding: 5%;
     width: 90%;
 }
 
@@ -466,16 +470,26 @@ ul.list {
 }
 
 #nowPlaying {
+    /*float: left;
     clear: both;
-    float: left;
-    width: 100%;
+    width: 100%;*/
     text-transform: capitalize;
 }
 
-    #nowPlaying > span {
-        margin: 0 11px;
-        font-size: 24px;
+    #nowPlaying .current-song-info {
+        float: right;
+        margin: 0 20px 0 11px;
+        min-width: 150px;
     }
+
+        #nowPlaying .current-song-info > span {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        #nowPlaying .current-song-info span.separator {
+            margin: 0 11px;
+        }
 
 .song-queue {
     width: 100%;

@@ -255,6 +255,8 @@
             var paddingAfterLast = 20; // Should probably match CSS.
             _m.$queue.find(".list").width(itemWidth * fileResults.length + paddingAfterLast);
 
+            selectCurrentSong();
+
             fileVMPromiseResults.forEach(function (fileVMPromiseResult) {
                 var songViewModel = fileVMPromiseResult[0];
                 var directoryViewModel = fileVMPromiseResult[1];
@@ -303,21 +305,43 @@
     };
 
     var updateNowPlaying = function (songViewModel) {
-        // TODO: A view?
-        _m.$nowPlaying.find("[data-bind]").each(function (i, el) {
-            var $el = $(el);
-            var prop = $el.data("bind");
-            var val = songViewModel[prop];
-            $el.html(val);
-        });
+        var updateUI = function () {
+            // TODO: A view?
+            _m.$nowPlaying.find("[data-bind]").each(function (i, el) {
+                var $el = $(el);
+                var prop = $el.data("bind");
+                var val = songViewModel[prop];
+                $el.html(val);
+            });
 
+            // HACK to get song info P tag to size to fit.
+            var $songInfo = _m.$nowPlaying.find(".current-song-info");
+            $songInfo.width($songInfo.width() + "px");
+            _.defer(function () { $songInfo.css("width", ""); });
+
+            selectCurrentSong();
+        }
+
+        var currentSongsQueuePage = getQueuePage(_m.currentSongIndex);
+        if (currentSongsQueuePage !== _m.currentQueuePage) {
+            _m.currentQueuePage = currentSongsQueuePage;
+            renderQueue().then(function () {
+                updateUI();
+            });
+        } else {
+            updateUI();
+        }
+    };
+
+    var selectCurrentSong = function () {
+        // Select current song in queue.
         _m.$queue.find(".selected").removeClass("selected");
 
         if (_m.currentQueuePage === getQueuePage(_m.currentSongIndex)) {
             var index = _m.currentSongIndex % Consts.queuePageSize;
-            _m.$queue.find(".item")
-                .eq(index)
-                .addClass("selected");
+            var $item = _m.$queue.find(".item").eq(index);
+            $item.addClass("selected");
+            $item[0].scrollIntoView();
         }
     };
 

@@ -14,9 +14,13 @@
         </div>
       </div>
       <div id="nowPlaying">
-        <span data-bind="artist"></span> |
-        <span data-bind="displayName"></span> |
-        <span data-bind="album"></span>
+        <p class="current-song-info">
+          <span data-bind="artist"></span>
+          <span class="separator">|</span>
+          <span data-bind="displayName"></span><!--
+            <span class="separator">|</span>
+          <span data-bind="album"></span>-->
+        </p>
         <div class="song-queue"></div>
       </div>
     </div>
