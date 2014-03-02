@@ -35,7 +35,7 @@
             var html = App.View.render(Consts.viewName, model);
             _m.$container.html(html);
 
-            window.scrollTo(1);
+            window.scrollTo(1,0);
             _.defer(function () { handleResize(); });
 
             model.albumDirectories.forEach(function (dir) {
