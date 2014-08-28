@@ -6,7 +6,7 @@
     var Pogoplug = pogoplug;
 
     var Consts = {
-        version: "1.000046"
+        version: "1.000050"
     };
 
     var Section = {

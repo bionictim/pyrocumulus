@@ -115,11 +115,36 @@ audio {
     .controls a {
         background: black;
         display: inline-block;
-        margin: 0 0 0px 10px;
+        margin: 2px 0 0px 14px;
         border: 2px solid #404040;
         border-radius: 20px;
-        padding: 8px 8px;
+        padding: 8px 14px;
+        font-size: 18px;
+        line-height: 14px;
     }
+
+    .controls .control-group {
+        display: inline-block;
+        margin: 0 0 0px 10px;
+        padding: 0;
+    }
+
+        .controls .control-group a {
+            border-radius: 0;
+            border-right: none;
+            margin: 0;
+        }
+
+            .controls .control-group a:first-child {
+                border-top-left-radius: 20px;
+                border-bottom-left-radius: 20px;
+            }
+
+            .controls .control-group a:last-child {
+                border-top-right-radius: 20px;
+                border-bottom-right-radius: 20px;
+                border-right: 2px solid #404040;
+            }
 
 .toolbar {
     padding-top: 8px;
@@ -492,12 +517,7 @@ ul.list {
     }
 
 .player .controls a {
-    font-size: 18px;
-    width: 15px;
-    height: 15px;
-    line-height: 18px;
-    border-radius: 30px;
-    padding: 6px 8px 10px 8px;
+    margin-top: 3px;
 }
 
 #nowPlaying {
