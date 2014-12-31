@@ -1,0 +1,4 @@
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteRule ^api/(.*)$ https://service.pogoplug.com/svc/api/$1 [NE,L]
+</IfModule>

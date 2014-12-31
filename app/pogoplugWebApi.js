@@ -252,7 +252,8 @@ Pogoplug = (function (jquery, underscore) {
 
     var login = function (email, password) {
         var endpoint = endpoints.loginUser;
-        var params = _.clone(endpoint.params);
+        var params = cloneParams(endpoint, true);
+        //var params = _.clone(endpoint.params);
 
         params.email = email;
         params.password = password;
@@ -355,6 +356,8 @@ Pogoplug = (function (jquery, underscore) {
             deferred.resolve(cachedData);
         else {
             var url = getUrl(endpoint.method, format);
+            console.log("Requesting: " + url);
+            console.log("Params: ", params);
             var request = $.ajax({
                 url: url,
                 dataType: format,
