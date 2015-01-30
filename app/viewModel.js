@@ -1,4 +1,4 @@
-﻿App.ViewModel = (function (jquery, underscore, repository, pogoplug) {
+﻿App.ViewModel = (function (jquery, underscore) {
     var $ = jquery;
     var _ = underscore;
 

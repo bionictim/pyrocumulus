@@ -1,19 +1,14 @@
-﻿App.Player = (function (jquery, underscore, ejs) {
+﻿App.Player = (function (jquery, underscore) {
     "use strict";
 
     var $ = jquery;
     var _ = underscore;
-    var EJS = ejs;
 
     var Consts = {
-        viewName: "player",
         queuePageSize: 50
     };
 
     var _m = {
-        model: null, // App.ViewModel.FileListViewModel
-        containerSelector: "",
-        $container: null,
         $positioner: null,
         $drawer: null,
         $nowPlaying: null, // TODO: Something nicer.
@@ -23,77 +18,6 @@
         currentSongIndex: 0,
         currentQueuePage: 0,
         hasScrolledQueue: false
-    };
-
-    var init = function (containerId) {
-        _m.containerSelector = "#" + containerId;
-        _m.$container = $(_m.containerSelector);
-        bindEventsOnce();
-
-        render({});
-    };
-
-    var render = function (model) {
-        if (model) {
-            // Boilerplate.
-            _m.model = model;
-            var html = App.View.render(Consts.viewName, model);
-            _m.$container.html(html);
-
-            _m.audio = _m.$container.find("audio")[0];
-            _m.audio.addEventListener("error", handlers.audioEvent, false);
-            _m.audio.addEventListener("ended", handlers.audioEvent, false);
-
-            _m.$positioner = _m.$container.find(".positioner");
-            _m.$drawer = _m.$container.find(".drawer");
-            _m.$nowPlaying = _m.$container.find("#nowPlaying");
-            _m.$queue = _m.$container.find(".song-queue");
-            handleResize();
-            commands.toggleVisibility(false);
-
-            // TODO: Optimize
-            _m.$queue.bind('scroll', function () {
-                var $scroller = $(this);
-                var scrollLeft = $scroller.scrollLeft();
-
-                if (scrollLeft > 0)
-                    _m.hasScrolledQueue = true;
-
-                if (scrollLeft === 0 && _m.hasScrolledQueue) {
-                    renderPreviousQueuePage();
-                } else if (scrollLeft + $scroller.innerWidth() >= $scroller[0].scrollWidth) {
-                    renderNextQueuePage();
-                }
-            });
-
-            _m.$queue.bind('mousewheel', function (e, delta) {
-                e.preventDefault();
-                var wheelEvent = e.originalEvent;
-                _m.$queue[0].scrollLeft += wheelEvent.deltaY;
-
-            });
-        }
-    };
-
-    var bindEventsOnce = function () {
-        _m.$container.on("click", "a[data-command]", function (e) {
-            e.preventDefault();
-            var $target = $(e.currentTarget);
-            var command = $target.data("command");
-
-            commands[command](e);
-        });
-    };
-
-    var handleResize = function () {
-        var winHeight = $(window).height();
-        _m.$positioner.css({
-            height: winHeight + "px"
-        });
-        //var $drawer = $(".drawer");
-        //var pos = $drawer.position();
-        //var pospos = _m.$positioner.position();
-        //App.Utils.Debug.write("w:" + winHeight + ",d:" + $drawer.height() + "," + $drawer.is(":visible") + ";" + pos.left + "," + pos.top + ";" + pospos.left + "," + pospos.top + "b:" + $drawer.css("bottom"));
     };
 
     var commands = {
@@ -184,46 +108,6 @@
 
             return true;
         }
-    };
-
-    var playSong = function (fileid) {
-        clearSong();
-        _m.songList.push(fileid);
-        renderQueue().then(function () {
-            _m.currentSongIndex = _m.songList.length - 1;
-            loadSong();
-            commands.play();
-        });
-    };
-
-    var addSong = function (fileid) {
-        _m.songList.push(fileid);
-        renderQueue().done();
-    };
-
-    var addAllAndPlayFirst = function (fileids, shuffle) {
-        _m.songList = _m.songList.concat(fileids);
-
-        if (!!shuffle)
-            commands.shuffleQueue();
-
-        renderQueue().then(function () {
-            _m.currentSongIndex = _m.songList.length - fileids.length;
-            loadSong();
-            commands.play();
-            commands.toggleVisibility(true);
-        });
-    };
-
-    var shuffleAllAndPlayFirst = function (fileids) {
-        addAllAndPlayFirst(fileids, true);
-    };
-
-    var addAll = function (fileids) {
-        _m.songList = _m.songList.concat(fileids);
-        renderQueue().then(function () {
-            commands.toggleVisibility(true);
-        });
     };
 
     var clearSong = function () {
@@ -357,13 +241,111 @@
         }
     };
 
-    return {
-        init: init,
-        playSong: playSong,
-        addSong: addSong,
-        addAllAndPlayFirst: addAllAndPlayFirst,
-        shuffleAllAndPlayFirst: shuffleAllAndPlayFirst,
-        addAll: addAll,
-        handleResize: handleResize
+   var options = {
+
+        viewName: "player",
+
+        afterInit: function () {
+            this.render({});
+        },
+
+        afterRender: function () {
+            _m.audio = this.$container.find("audio")[0];
+            _m.audio.addEventListener("error", handlers.audioEvent, false);
+            _m.audio.addEventListener("ended", handlers.audioEvent, false);
+
+            _m.$positioner = this.$container.find(".positioner");
+            _m.$drawer = this.$container.find(".drawer");
+            _m.$nowPlaying = this.$container.find("#nowPlaying");
+            _m.$queue = this.$container.find(".song-queue");
+            this.handleResize();
+            commands.toggleVisibility(false);
+
+            // TODO: Optimize
+            _m.$queue.bind('scroll', function () {
+                var $scroller = $(this);
+                var scrollLeft = $scroller.scrollLeft();
+
+                if (scrollLeft > 0)
+                    _m.hasScrolledQueue = true;
+
+                if (scrollLeft === 0 && _m.hasScrolledQueue) {
+                    renderPreviousQueuePage();
+                } else if (scrollLeft + $scroller.innerWidth() >= $scroller[0].scrollWidth) {
+                    renderNextQueuePage();
+                }
+            });
+
+            _m.$queue.bind('mousewheel', function (e, delta) {
+                e.preventDefault();
+                var wheelEvent = e.originalEvent;
+                _m.$queue[0].scrollLeft += wheelEvent.deltaY;
+
+            });
+        },
+
+        bindEventsOnce: function () {
+            this.$container.on("click", "a[data-command]", function (e) {
+                e.preventDefault();
+                var $target = $(e.currentTarget);
+                var command = $target.data("command");
+
+                commands[command](e);
+            });
+        },
+
+        handleResize: function () {
+            var winHeight = $(window).height();
+            _m.$positioner.css({
+                height: winHeight + "px"
+            });
+            //var $drawer = $(".drawer");
+            //var pos = $drawer.position();
+            //var pospos = _m.$positioner.position();
+            //App.Utils.Debug.write("w:" + winHeight + ",d:" + $drawer.height() + "," + $drawer.is(":visible") + ";" + pos.left + "," + pos.top + ";" + pospos.left + "," + pospos.top + "b:" + $drawer.css("bottom"));
+        },
+
+        playSong: function (fileid) {
+            clearSong();
+            _m.songList.push(fileid);
+            renderQueue().then(function () {
+                _m.currentSongIndex = _m.songList.length - 1;
+                loadSong();
+                commands.play();
+            });
+        },
+
+        addSong: function (fileid) {
+            _m.songList.push(fileid);
+            renderQueue().done();
+        },
+
+        addAllAndPlayFirst: function (fileids, shuffle) {
+            _m.songList = _m.songList.concat(fileids);
+
+            if (!!shuffle)
+                commands.shuffleQueue();
+
+            renderQueue().then(function () {
+                _m.currentSongIndex = _m.songList.length - fileids.length;
+                loadSong();
+                commands.play();
+                commands.toggleVisibility(true);
+            });
+        },
+
+        shuffleAllAndPlayFirst: function (fileids) {
+            this.addAllAndPlayFirst(fileids, true);
+        },
+
+        addAll: function (fileids) {
+            _m.songList = _m.songList.concat(fileids);
+            renderQueue().then(function () {
+                commands.toggleVisibility(true);
+            });
+        }
     };
-})($, _, EJS);
+
+    return new App.Controller(options);
+
+})($, _);
