@@ -1,7 +1,27 @@
 ﻿(function () {
+
+    $.fn.extend({
+        setData: function (key, value) {
+            this.data(key, value);
+            this.attr("data-" + key, value);
+
+            return this;
+        }
+    });
+
     App.Utils = {
         settings: {
             defaultThumbnail: "images/background-carbon-fiber.jpg" //"images/missing.png"
+        },
+
+        getViewportSize: function () {
+            var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+            return {
+                width: w,
+                height: h
+            };
         },
 
         getThumbnailUrl: function (url) {
@@ -10,6 +30,18 @@
 
         formatBackgroundImageCss: function (url) {
             return "url('" + App.Utils.getThumbnailUrl(url) + "')";
+        },
+
+        addCss: function (css) {
+            var head = document.getElementsByTagName('head')[0];
+            var s = document.createElement('style');
+            s.setAttribute('type', 'text/css');
+            if (s.styleSheet) {   // IE
+                s.styleSheet.cssText = css;
+            } else {                // the world
+                s.appendChild(document.createTextNode(css));
+            }
+            head.appendChild(s);
         },
 
         loadImage: function (imageUrl, onloaded) {

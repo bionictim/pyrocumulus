@@ -1,0 +1,36 @@
+<div class="visualization-view">
+  <a data-command="close" href="">
+    &#10005;
+  </a>
+  <a data-command="stop" href="">
+    &#10073; &#10073;
+  </a>
+  <a data-command="start" href="">
+    &#9654;
+  </a>
+  <div class="visualization-meta slide">
+    <p class="song-meta">
+      <span class="song"><%= song.displayName %></span>
+      by
+      <span class="artist"><%= song.artist %></span>
+    </p>
+    <p class="album-meta">
+      From the album
+      <span class="album"><%= song.album %></span>
+      <% if (directory.meta && directory.meta.length) { %>
+        <span class="year">(<%= directory.meta[0] %>)</span>
+        <% if (directory.meta.length > 1) { %>
+          <% for (var i = 1, len = directory.meta.length; i < len; i++) { %>
+              <span class="album-meta"><%= directory.meta[i] %></span>
+          <% } %>
+        <% } %>
+      <% } %>
+    </p>
+  </div>
+  <% for (var i = 0, len = images.length; i < len; i++) { %>
+    <div class="visualization-image slide <%= (images[i].isDisc() ? "disc" : "") %>"
+      style="background-image: <%= App.Utils.formatBackgroundImageCss(images[i].getUrl()) %>">
+      <img src="<%= images[i].getUrl() %>" />
+    </div>
+  <% } %>
+</div>

@@ -68,6 +68,10 @@
             _m.currentQueuePage = 0;
             renderQueue().done();
         },
+        showVisualization: function () {
+            var fileId = controller.getCurrentSongId();
+            controller.callbacks.showVisualization(fileId);
+        },
         select: function (e) {
             var $item = $(e.currentTarget).closest(".item");
             var fileid = $item.data("fileid");
@@ -216,7 +220,7 @@
             _.defer(function () { $songInfo.css("width", ""); });
 
             selectCurrentSong();
-        }
+        };
 
         var currentSongsQueuePage = getQueuePage(_m.currentSongIndex);
         if (currentSongsQueuePage !== _m.currentQueuePage) {
@@ -234,16 +238,22 @@
         _m.$queue.find(".selected").removeClass("selected");
 
         if (_m.currentQueuePage === getQueuePage(_m.currentSongIndex)) {
-            var index = _m.currentSongIndex % Consts.queuePageSize;
-            var $item = _m.$queue.find(".item").eq(index);
+            var $item = controller.getCurrentSongElement();
             $item.addClass("selected");
             $item[0].scrollIntoView();
+
+            controller.callbacks.songChanged($item.data("fileid"));
         }
     };
 
    var options = {
 
         viewName: "player",
+
+        callbacks: {
+            songChanged: function (fileId) { },
+            showVisualization: function () { }
+        },
 
         afterInit: function () {
             this.render({});
@@ -295,10 +305,11 @@
         },
 
         handleResize: function () {
-            var winHeight = $(window).height();
+            var viewportHeight = App.Utils.getViewportSize().height;
             _m.$positioner.css({
-                height: winHeight + "px"
+                height: viewportHeight + "px"
             });
+
             //var $drawer = $(".drawer");
             //var pos = $drawer.position();
             //var pospos = _m.$positioner.position();
@@ -343,9 +354,24 @@
             renderQueue().then(function () {
                 commands.toggleVisibility(true);
             });
+        },
+
+        getCurrentSongElement: function () {
+            var index = _m.currentSongIndex % Consts.queuePageSize;
+            var $result = _m.$queue.find(".item").eq(index);
+
+            return $result;
+        },
+
+        getCurrentSongId: function () {
+            var $item = this.getCurrentSongElement();
+            var result = $item.data("fileid");
+
+            return result;
         }
     };
 
-    return new App.Controller(options);
+    var controller = new App.Controller(options);
+    return controller;
 
 })($, _);

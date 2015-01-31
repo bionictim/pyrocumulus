@@ -1,10 +1,14 @@
 ﻿html {
     webkit-text-size-adjust: none;
+    min-height: 100%;
+    position: relative;
 }
 
-body, html {
-    width: 100%;
+body {
     height: 100%;
+}
+
+html, body {
     padding: 0;
     margin: 0;
     font-family: 'Exo 2', sans-serif;
@@ -19,13 +23,32 @@ a, a:visited {
 }
 
 section {
+    position: absolute;
     display: none;
-    min-height: 100vh;
+    /* min-height: 100vh; */
+    width: 100%;
+    min-height: 100%;
+    height: 100%;
 }
 
     section.visible {
         display: block;
     }
+
+section,
+.file-list-view,
+.list-section,
+.mask {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+    height: 100%;
+}
+
+.list-section {
+    overflow: scroll;
+}
 
 .hidden {
     display: none !important;
@@ -35,6 +58,45 @@ section {
     -webkit-box-shadow: 0 0 30px 3px rgba(0,0,0,1);
     box-shadow: 0 0 30px 3px rgba(0,0,0,1);
 }
+
+#app {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow-y: scroll;
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+}
+
+#app.no-scroll {
+    overflow: hidden;
+}
+
+#background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+}
+
+    #background .image-host {
+        position: absolute;
+        z-index: -100;
+        height: 100vh;
+        width: 100%;
+        /*background: #404142;
+        background: -moz-radial-gradient(right bottom, farthest-side, #404142 0%, #2c2d2d 42%, #000000 100%);
+        background: -webkit-gradient(radial, 100% 100%, 0px, 100% 100%, 100%, color-stop(0%,#404142), color-stop(42%,#2c2d2d), color-stop(100%,#000000));
+        background: -webkit-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%);
+        background: -o-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%);
+        background: -ms-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%);
+        background: radial-gradient(farthest-side at right bottom, #404142 0%,#2c2d2d 42%,#000000 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404142', endColorstr='#000000',GradientType=1 );*/
+        background-image: url(../images/background-wall-cracks.jpg);
+        background-size: cover;
+    }
 
 #login {
     text-align: center;
@@ -68,37 +130,6 @@ section {
         width: 204px;
         background: #808080;
         color: #fff;
-    }
-
-#app {
-    position: absolute;
-    z-index: 1;
-    width: 100%;
-}
-
-#background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 0;
-}
-
-    #background .image-host {
-        position: absolute;
-        z-index: -100;
-        height: 100vh;
-        width: 100%;
-        /*background: #404142;
-        background: -moz-radial-gradient(right bottom, farthest-side, #404142 0%, #2c2d2d 42%, #000000 100%);
-        background: -webkit-gradient(radial, 100% 100%, 0px, 100% 100%, 100%, color-stop(0%,#404142), color-stop(42%,#2c2d2d), color-stop(100%,#000000));
-        background: -webkit-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%);
-        background: -o-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%);
-        background: -ms-radial-gradient(right bottom, farthest-side, #404142 0%,#2c2d2d 42%,#000000 100%);
-        background: radial-gradient(farthest-side at right bottom, #404142 0%,#2c2d2d 42%,#000000 100%);
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#404142', endColorstr='#000000',GradientType=1 );*/
-        background-image: url(../images/background-wall-cracks.jpg);
-        background-size: cover;
     }
 
 /* Controls */
@@ -180,10 +211,11 @@ audio {
 }
 
 .file-list-view .list-section {
+    height: 100%;
     text-align: center;
     clear: both;
     position: relative;
-    min-height: 90vh;
+    /* min-height: 90vh; */
 }
 
     .file-list-view .list-section .mask {
@@ -311,7 +343,8 @@ ul.list {
 /* ==== */
 
 .file-list-view {
-    min-height: 100vh;
+    /* min-height: 100vh; */
+    height: 100%;
 }
 
 ul.list {
@@ -321,8 +354,12 @@ ul.list {
     clear: both;
 }
 
+.file-list-view .list:first-child {
+    padding-top: 30px;
+}
+
 .file-list-view .list:last-child {
-    margin-bottom: 200px;
+    /* margin-bottom: 200px; */
 }
 
 .file-list-view .list.file.song {
@@ -479,7 +516,7 @@ ul.list {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 101;
+    z-index: 102;
 }
 
     .player-view .positioner {
@@ -570,3 +607,133 @@ ul.list {
         .song-queue .item.selected {
             border-color: darkred;
         }
+
+
+/* Visualization */
+#visualization {
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+    z-index: 101;
+    height: 100%;
+    width: 100%;
+
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#visualization [data-command] {
+    position: fixed;
+    z-index: 200;
+    top: 10px;
+    display: block;
+    background: black;
+    border: 1px solid grey;
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+#visualization [data-command='close'] {
+    right: 10px;
+}
+
+#visualization [data-command='stop'],
+#visualization [data-command='start'] {
+    left: 10px;
+}
+
+#visualization [data-command='start'] {
+    display: none;
+}
+
+#visualization.paused [data-command='start'] {
+    display: block;
+}
+
+#visualization.paused [data-command='stop'] {
+    display: none;
+}
+
+#visualization .slide,
+#visualization.scrollable .visualization-image.slide.disc {
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+#visualization .slide img {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+
+    -webkit-transition: opacity 500ms linear; /* For Safari 3.1 to 6.0 */
+    transition: opacity 500ms linear;
+}
+
+#visualization.scrollable {
+    overflow: visible;
+}
+
+#visualization.scrollable .slide img {
+    display: block;
+    opacity: 1;
+    height: auto;
+}
+
+[data-orientation='portrait'] #visualization.scrollable .slide img {
+    height: 100%;
+    width: auto;
+}
+
+#visualization .visualization-image.slide.disc {
+    position: static;
+    margin-left: auto;
+    width: 595px; /* todo */
+    border-radius: 50%;
+    margin-right: auto;
+}
+
+#visualization .visualization-meta.slide {
+    overflow-y: scroll;
+    display: block;
+    height: auto;
+    text-align: center;
+}
+
+.visualization-meta p:first-child {
+    margin-top: 55px;
+}
+
+.visualization-meta p,
+.visualization-meta p span.year {
+    background: #000;
+    color: #aeaeae;
+    padding: 14px;
+    font-size: 28px;
+    font-style: italic;
+}
+
+.visualization-meta p span {
+    text-transform: capitalize;
+    color: #dedede;
+    font-size: 48px;
+    font-weight: bold;
+    padding: 0 12px;
+    font-style: normal;
+}
+
+.visualization-meta p span.year {
+    padding: 0;
+}

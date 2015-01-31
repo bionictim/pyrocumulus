@@ -6,7 +6,7 @@
     var Pogoplug = pogoplug;
 
     var Consts = {
-        version: "1.000050"
+        version: "1.000063"
     };
 
     var Section = {
@@ -16,8 +16,20 @@
     };
 
     var _m = {
+        $app: null,
         $allSections: null,
         $sections: {}
+    };
+
+    var toggleScroll = function (shouldScroll) {
+        if (shouldScroll === null || typeof shouldScroll === "undefined") {
+            _m.$app.toggleClass("no-scroll");
+        } else {
+            if (shouldScroll)
+                _m.$app.removeClass("no-scroll");
+            else
+                _m.$app.addClass("no-scroll");
+        }
     };
 
     var init = function () {
@@ -30,12 +42,24 @@
         // TODO: "main" view stuffs after refactoring to a view.
         bindEventsOneTime();
 
+        _m.$app = $("#app");
         _m.$allSections = $("section");
         _.each(Section, function (section) {
             _m.$sections[section] = $("#" + section);
         });
 
+        App.Visualization.init("visualization");
+
         App.Player.init("playerContainer");
+        App.Player.setCallback("songChanged", function (fileId) {
+            App.Visualization.update(fileId);
+        });
+        App.Player.setCallback("showVisualization", function (fileId) {
+            App.Visualization.update(fileId).then(function () {
+                App.Visualization.start();
+                App.Visualization.show();  
+            });
+        });
 
         App.Login.init(Section.login);
         App.Login.setCallback("loggedIn", function (user) {
@@ -119,12 +143,27 @@
         $(window).on("resize", handleResize);
     };
 
-    var handleResize = function (e) {
+    var _handleResize = function (e) {
+        var vpSize = App.Utils.getViewportSize();
+
+        if (vpSize.width > vpSize.height) {
+            _m.$app.setData("data-orientation", "landscape");
+        } else {
+            _m.$app.setData("data-orientation", "portrait");
+        }
+
         _.delay(function () {
-            App.FileList.handleResize();
-            App.Player.handleResize();
+            _.each([
+                "FileList",
+                "Visualization",
+                "Player",
+            ], function (controller) {
+                App[controller].handleResize();
+            });
         }, 100);
     };
+
+    var handleResize = _.debounce(_handleResize, 100);
 
     var render = function () {
         if (Pogoplug.isLoggedIn()) {
@@ -139,7 +178,8 @@
 
     return {
         init: init,
-        handleResize: handleResize
+        handleResize: handleResize,
+        toggleScroll: toggleScroll
     };
 
 })($, _, Pogoplug);

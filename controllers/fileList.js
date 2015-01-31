@@ -98,8 +98,10 @@
             if (this.model.parentDirectoryViewModel instanceof App.ViewModel.AlbumDirectoryViewModel) {
                 var thumbnailFile = this.model.getThumbnail("large");
                 if (!!thumbnailFile) {
-                    var thumbId = !!thumbnailFile ? thumbnailFile.file.fileid : "";
-                    var url = Pogoplug.getFileStreamUrl(thumbId);
+                    // var thumbId = !!thumbnailFile ? thumbnailFile.file.fileid : "";
+                    // var url = Pogoplug.getFileStreamUrl(thumbId);
+
+                    var url = thumbnailFile.getUrl();
 
                     if (!!url) {
                         this.$container.find(".list-section").css({
@@ -130,9 +132,10 @@
         },
 
         handleResize: function () {
+            var padding = 30;
             var toolbarHeight = this.$container.find(".toolbar").outerHeight(true);
-            var $listSection = this.$container.find(".list-section");
-            $listSection.css("margin-top", toolbarHeight + "px");
+            var $firstList = this.$container.find(".list").first();
+            $firstList.css("margin-top", (toolbarHeight + padding) + "px");
         }
     };
 

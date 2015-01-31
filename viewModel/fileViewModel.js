@@ -233,6 +233,16 @@
 
     var ImageViewModel = App.Class.derive(FileViewModel, function (file, fileType) {
         ImageViewModel.superproto.constructor.call(this, file, fileType || FileViewModel.FileType.image);
+    }, {
+        getUrl: function () {
+            return Pogoplug.getFileStreamUrl(this.file.fileid);
+        },
+
+        isDisc: function() {
+            // TODO: RegEx
+            return this.displayName.indexOf("disc") >= 0 ||
+                this.displayName.indexOf("vinyl") >= 0;
+        }
     });
 
     App.ViewModel.FileViewModel = FileViewModel;
